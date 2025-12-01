@@ -556,139 +556,216 @@ def _render_api_key_input() -> str:
     st.markdown("""
     <style>
     .api-key-container {
-        margin-bottom: 1.25rem;
+        margin-bottom: 1.5rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border-primary);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem;
+        transition: all var(--transition-normal);
     }
-    
+
+    .api-key-container:hover {
+        border-color: var(--accent-primary);
+        box-shadow: var(--shadow-sm);
+    }
+
     .api-key-label {
         font-weight: 600;
         color: var(--text-primary);
-        font-size: 0.875rem;
-        margin-bottom: 0.625rem;
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
-    
+
     .api-key-input-group {
         position: relative;
         display: flex;
-        gap: 0.5rem;
         align-items: stretch;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-fast);
     }
-    
+
+    .api-key-input-group:focus-within {
+        box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15), var(--shadow-md);
+    }
+
     div[data-testid="stTextInput"] {
         flex: 1;
+        margin: 0 !important;
     }
-    
+
+    div[data-testid="stTextInput"] > div {
+        height: 100% !important;
+    }
+
     div[data-testid="stTextInput"] input[type="password"],
     div[data-testid="stTextInput"] input[type="text"],
     div[data-testid="stTextInput"] input:not([type]) {
         font-family: var(--font-mono) !important;
-        letter-spacing: 0.03em !important;
-        height: 44px !important;
-        padding: 0.75rem 1rem !important;
+        letter-spacing: 0.025em !important;
+        height: 48px !important;
+        padding: 0.875rem 1rem !important;
         background: var(--bg-card) !important;
         border: 1.5px solid var(--border-primary) !important;
-        border-radius: var(--radius-md) !important;
+        border-radius: 0 !important;
+        border-right: none !important;
         color: var(--text-primary) !important;
-        font-size: 0.875rem !important;
-        transition: all 0.2s ease !important;
+        font-size: 0.9rem !important;
+        font-weight: 500 !important;
+        transition: all var(--transition-fast) !important;
+        outline: none !important;
     }
-    
+
     div[data-testid="stTextInput"] input::placeholder {
         color: var(--text-muted) !important;
-        opacity: 0.6 !important;
+        opacity: 0.7 !important;
+        font-weight: 400 !important;
     }
-    
+
     div[data-testid="stTextInput"] input:focus {
         border-color: var(--accent-primary) !important;
-        box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1) !important;
-        outline: none !important;
         background: var(--bg-elevated) !important;
+        box-shadow: none !important;
     }
-    
+
     div[data-testid="stTextInput"] button:not([key]) {
         display: none !important;
     }
-    
+
     .api-key-input-wrapper {
         display: flex;
+        width: 100%;
     }
-    
+
     div[data-testid="stHorizontalBlock"] > div:first-child {
         padding-right: 0 !important;
+        flex: 1 !important;
     }
-    
+
     div[data-testid="stHorizontalBlock"] > div:last-child {
         padding-left: 0 !important;
+        width: auto !important;
     }
-    
+
     button[key="toggle_api_key_visibility"] {
         background: var(--bg-card) !important;
         border: 1.5px solid var(--border-primary) !important;
         color: var(--text-secondary) !important;
-        width: 44px !important;
-        height: 44px !important;
-        min-width: 44px !important;
-        min-height: 44px !important;
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
         padding: 0 !important;
         border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
         border-left: none !important;
-        margin-left: -1px !important;
-        transition: all 0.2s ease !important;
-        font-size: 1.1rem !important;
+        margin-left: 0 !important;
+        transition: all var(--transition-fast) !important;
+        font-size: 1rem !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        cursor: pointer !important;
+        position: relative !important;
+        overflow: hidden !important;
     }
-    
+
     button[key="toggle_api_key_visibility"]:hover {
         background: var(--bg-elevated) !important;
         border-color: var(--accent-primary) !important;
         color: var(--accent-primary) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: var(--shadow-sm) !important;
     }
-    
-    div[data-testid="stTextInput"] input[type="password"],
-    div[data-testid="stTextInput"] input[type="text"],
-    div[data-testid="stTextInput"] input:not([type]) {
-        border-radius: var(--radius-md) 0 0 var(--radius-md) !important;
-        border-right: none !important;
+
+    button[key="toggle_api_key_visibility"]:active {
+        transform: translateY(0) !important;
+        box-shadow: none !important;
     }
-    
-    div[data-testid="stTextInput"] input:focus {
-        border-right: none !important;
-    }
-    
+
     .api-key-feedback {
-        margin-top: 0.5rem;
+        margin-top: 0.75rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        font-size: 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 500;
     }
-    
+
     .api-key-feedback.valid {
         color: var(--accent-secondary);
     }
-    
+
     .api-key-feedback.invalid {
         color: var(--accent-error);
     }
-    
+
     .api-key-help-link {
         color: var(--accent-primary);
         text-decoration: none;
-        font-size: 0.75rem;
-        margin-top: 0.5rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-top: 0.75rem;
         display: inline-flex;
         align-items: center;
-        gap: 0.25rem;
-        transition: all 0.2s;
+        gap: 0.375rem;
+        transition: all var(--transition-fast);
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--radius-sm);
+        background: rgba(88, 166, 255, 0.05);
+        border: 1px solid rgba(88, 166, 255, 0.1);
     }
-    
+
     .api-key-help-link:hover {
         color: var(--accent-purple);
-        text-decoration: underline;
+        background: rgba(163, 113, 247, 0.1);
+        border-color: rgba(163, 113, 247, 0.2);
+        text-decoration: none;
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .api-key-help-link i {
+        font-size: 0.75rem;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .api-key-container {
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .api-key-input-group {
+            flex-direction: column;
+            border-radius: var(--radius-md);
+        }
+
+        div[data-testid="stTextInput"] input[type="password"],
+        div[data-testid="stTextInput"] input[type="text"],
+        div[data-testid="stTextInput"] input:not([type]) {
+            border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+            border-right: 1.5px solid var(--border-primary) !important;
+            border-bottom: none !important;
+        }
+
+        button[key="toggle_api_key_visibility"] {
+            border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+            border-left: 1.5px solid var(--border-primary) !important;
+            border-top: none !important;
+            width: 100% !important;
+            height: 44px !important;
+            min-height: 44px !important;
+            justify-content: center !important;
+            font-size: 0.9rem !important;
+        }
+
+        div[data-testid="stHorizontalBlock"] > div:last-child {
+            width: 100% !important;
+        }
     }
     </style>
     """, unsafe_allow_html=True)
@@ -726,9 +803,9 @@ def _render_api_key_input() -> str:
             st.session_state.api_key_visible = False
         
         st.markdown('<div class="api-key-input-wrapper">', unsafe_allow_html=True)
-        
+
         input_col, toggle_col = st.columns([1, 0.12], gap="small")
-        
+
         with input_col:
             api_key = st.text_input(
                 "OpenRouter API Key",
@@ -739,15 +816,55 @@ def _render_api_key_input() -> str:
                 label_visibility="collapsed",
                 key="api_key_input"
             )
-        
+
         with toggle_col:
-            toggle_text = "🙈" if st.session_state.api_key_visible else "👁️"
-            if st.button(toggle_text, key="toggle_api_key_visibility", help="Toggle visibility", use_container_width=True):
+            # Create toggle button with Font Awesome icon
+            icon_html = icon("eye-slash", "1rem") if st.session_state.api_key_visible else icon("eye", "1rem")
+            st.markdown(f"""
+            <div style="display: flex; align-items: center; justify-content: center; height: 48px;">
+                <div onclick="
+                    const button = document.querySelector('button[key=toggle_api_key_visibility]');
+                    if (button) button.click();
+                " style="
+                    background: var(--bg-card);
+                    border: 1.5px solid var(--border-primary);
+                    color: var(--text-secondary);
+                    width: 48px;
+                    height: 48px;
+                    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+                    border-left: none;
+                    margin-left: 0;
+                    transition: all 0.2s ease;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    font-size: 1rem;
+                " onmouseover="
+                    this.style.background='var(--bg-elevated)';
+                    this.style.borderColor='var(--accent-primary)';
+                    this.style.color='var(--accent-primary)';
+                    this.style.transform='translateY(-1px)';
+                    this.style.boxShadow='var(--shadow-sm)';
+                " onmouseout="
+                    this.style.background='var(--bg-card)';
+                    this.style.borderColor='var(--border-primary)';
+                    this.style.color='var(--text-secondary)';
+                    this.style.transform='translateY(0)';
+                    this.style.boxShadow='none';
+                ">
+                    {icon_html}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Hidden Streamlit button for state management
+            if st.button("", key="toggle_api_key_visibility", help="Toggle visibility"):
                 st.session_state.api_key_visible = not st.session_state.api_key_visible
                 if api_key:
                     st.session_state["api_key"] = api_key
                 st.rerun()
-        
+
         st.markdown('</div>', unsafe_allow_html=True)
         
         if api_key:
