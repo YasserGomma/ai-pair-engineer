@@ -555,76 +555,79 @@ def render_header() -> None:
 def _render_api_key_input() -> str:
     st.markdown("""
     <style>
-    .api-key-wrapper {
-        margin-bottom: 1rem;
+    .api-key-container {
+        margin-bottom: 1.25rem;
     }
     
-    .api-key-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 0.5rem;
-    }
-    
-    .api-key-title {
+    .api-key-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+        margin-bottom: 0.625rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        font-size: 0.9rem;
     }
     
-    .api-key-help {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: rgba(88, 166, 255, 0.1);
-        border: 1px solid rgba(88, 166, 255, 0.2);
-        color: var(--accent-primary);
-        font-size: 0.65rem;
+    .api-key-input-group {
+        position: relative;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: help;
+        gap: 0.5rem;
+        align-items: stretch;
+    }
+    
+    div[data-testid="stTextInput"] {
+        flex: 1;
     }
     
     div[data-testid="stTextInput"] input[type="password"],
     div[data-testid="stTextInput"] input[type="text"],
     div[data-testid="stTextInput"] input:not([type]) {
         font-family: var(--font-mono) !important;
-        letter-spacing: 0.05em !important;
-        height: 40px !important;
-        padding: 0.625rem 0.875rem !important;
+        letter-spacing: 0.03em !important;
+        height: 44px !important;
+        padding: 0.75rem 1rem !important;
         background: var(--bg-card) !important;
-        border: 1px solid var(--border-primary) !important;
+        border: 1.5px solid var(--border-primary) !important;
         border-radius: var(--radius-md) !important;
         color: var(--text-primary) !important;
         font-size: 0.875rem !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    div[data-testid="stTextInput"] input::placeholder {
+        color: var(--text-muted) !important;
+        opacity: 0.6 !important;
     }
     
     div[data-testid="stTextInput"] input:focus {
         border-color: var(--accent-primary) !important;
-        box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.1) !important;
+        box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1) !important;
         outline: none !important;
+        background: var(--bg-elevated) !important;
     }
     
     div[data-testid="stTextInput"] button:not([key]) {
         display: none !important;
     }
     
+    .api-key-input-wrapper {
+        display: flex;
+    }
+    
     button[key="toggle_api_key_visibility"] {
         background: var(--bg-card) !important;
-        border: 1px solid var(--border-primary) !important;
+        border: 1.5px solid var(--border-primary) !important;
         color: var(--text-secondary) !important;
-        width: 40px !important;
-        height: 40px !important;
-        min-width: 40px !important;
-        min-height: 40px !important;
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
         padding: 0 !important;
-        border-radius: var(--radius-md) !important;
-        transition: all 0.2s !important;
-        font-size: 1rem !important;
+        border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
+        border-left: none !important;
+        transition: all 0.2s ease !important;
+        font-size: 1.1rem !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -636,56 +639,47 @@ def _render_api_key_input() -> str:
         color: var(--accent-primary) !important;
     }
     
-    .api-key-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.375rem 0.625rem;
-        border-radius: var(--radius-sm);
-        font-size: 0.75rem;
-        font-weight: 500;
-        margin-top: 0.5rem;
+    div[data-testid="stTextInput"] input[type="password"],
+    div[data-testid="stTextInput"] input[type="text"],
+    div[data-testid="stTextInput"] input:not([type]) {
+        border-radius: var(--radius-md) 0 0 var(--radius-md) !important;
+        border-right: none !important;
     }
     
-    .api-key-status.valid {
-        background: rgba(126, 231, 135, 0.1);
-        border: 1px solid rgba(126, 231, 135, 0.2);
+    div[data-testid="stTextInput"] input:focus {
+        border-right: none !important;
+    }
+    
+    .api-key-feedback {
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .api-key-feedback.valid {
         color: var(--accent-secondary);
     }
     
-    .api-key-status.invalid {
-        background: rgba(248, 81, 73, 0.1);
-        border: 1px solid rgba(248, 81, 73, 0.2);
+    .api-key-feedback.invalid {
         color: var(--accent-error);
     }
     
-    .api-key-link {
+    .api-key-help-link {
         color: var(--accent-primary);
         text-decoration: none;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
         display: inline-flex;
         align-items: center;
         gap: 0.25rem;
-        margin-top: 0.5rem;
         transition: all 0.2s;
     }
     
-    .api-key-link:hover {
+    .api-key-help-link:hover {
         color: var(--accent-purple);
         text-decoration: underline;
-    }
-    
-    .api-key-hint {
-        font-size: 0.7rem;
-        color: var(--text-muted);
-        margin-top: 0.375rem;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-    
-    div[data-testid="stTextInput"] + div[data-testid="stTextInput"] {
-        display: none;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -707,30 +701,24 @@ def _render_api_key_input() -> str:
         api_key_source = "environment"
     
     st.markdown("""
-    <div class="api-key-wrapper">
-        <div class="api-key-header">
-            <div class="api-key-title">
-                <i class="fas fa-key" style="color: var(--accent-primary); font-size: 0.85rem;"></i>
-                <span>OpenRouter API Key</span>
-            </div>
-            <div class="api-key-help" title="Get your API key from openrouter.ai/keys">?</div>
+    <div class="api-key-container">
+        <div class="api-key-label">
+            <i class="fas fa-key" style="color: var(--accent-primary);"></i>
+            <span>OpenRouter API Key</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
     if api_key_source:
-        status_icon = icon(Icons.CHECK, "0.85em", "#7ee787")
-        st.markdown(f"""
-        <div class="api-key-status valid">
-            {status_icon} Using API key from {api_key_source}
-        </div>
-        """, unsafe_allow_html=True)
+        st.info(f"✓ Using API key from {api_key_source}")
     else:
         current_key = st.session_state.get("api_key", "")
         if "api_key_visible" not in st.session_state:
             st.session_state.api_key_visible = False
         
-        input_col, toggle_col = st.columns([6, 1], gap="small")
+        st.markdown('<div class="api-key-input-wrapper">', unsafe_allow_html=True)
+        
+        input_col, toggle_col = st.columns([1, 0.12], gap="none")
         
         with input_col:
             api_key = st.text_input(
@@ -742,45 +730,38 @@ def _render_api_key_input() -> str:
                 label_visibility="collapsed",
                 key="api_key_input"
             )
-            if not api_key:
-                st.markdown("""
-                <div class="api-key-hint">
-                    <i class="fas fa-info-circle" style="font-size: 0.65rem;"></i>
-                    <span>Press Enter to apply</span>
-                </div>
-                """, unsafe_allow_html=True)
         
         with toggle_col:
             toggle_text = "🙈" if st.session_state.api_key_visible else "👁️"
-            if st.button(toggle_text, key="toggle_api_key_visibility", help="Toggle visibility"):
+            if st.button(toggle_text, key="toggle_api_key_visibility", help="Toggle visibility", use_container_width=True):
                 st.session_state.api_key_visible = not st.session_state.api_key_visible
                 if api_key:
                     st.session_state["api_key"] = api_key
                 st.rerun()
-            if not api_key:
-                st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
         
         if api_key:
             is_valid, error_msg = validate_api_key(api_key)
             if is_valid:
-                status_icon = icon(Icons.CHECK, "0.85em", "#7ee787")
                 st.markdown(f"""
-                <div class="api-key-status valid">
-                    {status_icon} Valid format
+                <div class="api-key-feedback valid">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Valid API key</span>
                 </div>
                 """, unsafe_allow_html=True)
             else:
-                status_icon = icon(Icons.EXCLAMATION, "0.85em", "#f85149")
                 st.markdown(f"""
-                <div class="api-key-status invalid">
-                    {status_icon} {error_msg}
+                <div class="api-key-feedback invalid">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{error_msg}</span>
                 </div>
                 """, unsafe_allow_html=True)
         
         st.markdown("""
-        <a href="https://openrouter.ai/keys" target="_blank" class="api-key-link">
-            <i class="fas fa-external-link-alt" style="font-size: 0.75rem;"></i>
-            Get API key
+        <a href="https://openrouter.ai/keys" target="_blank" class="api-key-help-link">
+            <i class="fas fa-external-link-alt"></i>
+            Get your API key
         </a>
         """, unsafe_allow_html=True)
         
