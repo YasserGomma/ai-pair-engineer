@@ -556,6 +556,7 @@ def render_code_input() -> Tuple[str, Optional[str]]:
     st.markdown(f"### {icon(Icons.FILE, '1em')} Your Code", unsafe_allow_html=True)
     uploaded_file = st.file_uploader("Upload a code file", type=SUPPORTED_FILE_TYPES)
     detected_language = None
+    file_just_uploaded = False
     if uploaded_file is not None:
         file_size = len(uploaded_file.getvalue())
         if file_size > 500 * 1024:
@@ -563,15 +564,21 @@ def render_code_input() -> Tuple[str, Optional[str]]:
         else:
             try:
                 file_content = uploaded_file.read().decode("utf-8")
-                st.session_state["code_input"] = file_content
-                storage.save_code_input(file_content)
+                # Check if this is a new file upload
+                if st.session_state.get("code_input", "") != file_content:
+                    st.session_state["code_input"] = file_content
+                    storage.save_code_input(file_content)
+                    file_just_uploaded = True
                 detected_language = detect_language_from_extension(uploaded_file.name)
                 st.success(f"Loaded `{uploaded_file.name}`" + (f" - Detected: **{detected_language}**" if detected_language else ""))
             except Exception as e:
                 st.error(f"Error reading file: {str(e)}")
     st.markdown("**Or paste your code below:**")
     code_input = st.text_area("Paste your code here", height=350, placeholder="Paste your code here...", label_visibility="collapsed", value=st.session_state.get("code_input", ""), key="code_text_area")
-    if code_input != st.session_state.get("code_input", ""):
+    # Use session state value if file was just uploaded (text_area may have stale value)
+    if file_just_uploaded:
+        code_input = st.session_state.get("code_input", "")
+    elif code_input != st.session_state.get("code_input", ""):
         st.session_state["code_input"] = code_input
         storage.save_code_input(code_input)
     if code_input:
@@ -753,45 +760,29 @@ def render_review_tabs(code_input: str, api_key: str, language: str, context: st
 
     # Mode selector with persistence
     modes = [ReviewMode.DESIGN_FLAWS, ReviewMode.TEST_GENERATION, ReviewMode.REFACTORING, ReviewMode.SECURITY_REVIEW, ReviewMode.FULL_REVIEW]
-    mode_options = ["🔍 Design Flaws", "🧪 Generate Tests", "♻️ Refactoring", "🔒 Security Audit", "🤖 Full Review"]
-    mode_map = {opt: mode for opt, mode in zip(mode_options, modes)}
+    mode_icons = {
+        ReviewMode.DESIGN_FLAWS: ("search", "#58a6ff"),
+        ReviewMode.TEST_GENERATION: ("flask", "#7ee787"),
+        ReviewMode.REFACTORING: ("code-branch", "#a371f7"),
+        ReviewMode.SECURITY_REVIEW: ("shield-halved", "#f59e0b"),
+        ReviewMode.FULL_REVIEW: ("robot", "#58a6ff")
+    }
+    mode_short_names = {
+        ReviewMode.DESIGN_FLAWS: "Design Flaws",
+        ReviewMode.TEST_GENERATION: "Generate Tests",
+        ReviewMode.REFACTORING: "Refactoring",
+        ReviewMode.SECURITY_REVIEW: "Security Audit",
+        ReviewMode.FULL_REVIEW: "Full Review"
+    }
 
-    # Get saved mode index
+    # Get saved mode
     saved_mode = st.session_state.get("analysis_mode", "FULL_REVIEW")
     mode_names = [m.name for m in modes]
     default_idx = mode_names.index(saved_mode) if saved_mode in mode_names else 4
+    selected_mode = modes[default_idx]
 
-    # Styled mode selector
+    # Enhanced Review Mode Card Styling
     st.markdown("""<style>
-    /* Analysis mode selector styling */
-    div[data-testid="stRadio"] > div[role="radiogroup"] {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    div[data-testid="stRadio"] > div[role="radiogroup"] > label {
-        background: var(--bg-card);
-        border: 1px solid var(--border-primary);
-        border-radius: var(--radius-md);
-        padding: 0.6rem 1rem;
-        cursor: pointer;
-        transition: all 0.2s;
-        flex: 1;
-        min-width: 140px;
-        text-align: center;
-    }
-    div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
-        border-color: var(--accent-primary);
-        background: var(--bg-elevated);
-    }
-    div[data-testid="stRadio"] > div[role="radiogroup"] > label[data-checked="true"] {
-        background: var(--accent-primary);
-        border-color: var(--accent-primary);
-        color: #0a0e14;
-        font-weight: 600;
-    }
-
-    /* Enhanced Review Mode Card Styling */
     .review-mode-card {
         background: var(--bg-card);
         border: 1px solid var(--border-primary);
@@ -835,20 +826,91 @@ def render_review_tabs(code_input: str, api_key: str, language: str, context: st
     }
     </style>""", unsafe_allow_html=True)
 
-    selected_option = st.radio(
-        "Analysis Mode",
-        mode_options,
-        index=default_idx,
-        horizontal=True,
-        label_visibility="collapsed",
-        key="analysis_mode_selector"
-    )
-
-    # Save mode preference when changed
-    selected_mode = mode_map[selected_option]
+    # Add custom styling for mode buttons
+    st.markdown("""
+    <style>
+    /* Style mode selector buttons */
+    button[key*="mode_"] {
+        min-height: 100px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.5rem !important;
+        padding: 1rem 0.5rem !important;
+        font-size: 0.9rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    button[key*="mode_full"] {
+        min-height: 60px !important;
+        flex-direction: row !important;
+        justify-content: center !important;
+        gap: 0.75rem !important;
+        padding: 0.875rem 1.5rem !important;
+        font-size: 1rem !important;
+    }
+    
+    @media (max-width: 768px) {
+        button[key*="mode_"] {
+            min-height: 90px !important;
+            font-size: 0.85rem !important;
+            padding: 0.875rem 0.375rem !important;
+        }
+        
+        button[key*="mode_full"] {
+            min-height: 55px !important;
+            font-size: 0.9rem !important;
+        }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Render mode selector using buttons in a grid
+    # First row: 4 mode buttons
+    col1, col2, col3, col4 = st.columns(4, gap="small")
+    
+    with col1:
+        icon_name, icon_color = mode_icons[ReviewMode.DESIGN_FLAWS]
+        button_label = f'{icon(Icons.SEARCH, "1.5em", icon_color)}<br>{mode_short_names[ReviewMode.DESIGN_FLAWS]}'
+        if st.button(button_label, key="mode_design", use_container_width=True, 
+                    type="primary" if selected_mode == ReviewMode.DESIGN_FLAWS else "secondary"):
+            selected_mode = ReviewMode.DESIGN_FLAWS
+    
+    with col2:
+        icon_name, icon_color = mode_icons[ReviewMode.TEST_GENERATION]
+        button_label = f'{icon(Icons.FLASK, "1.5em", icon_color)}<br>{mode_short_names[ReviewMode.TEST_GENERATION]}'
+        if st.button(button_label, key="mode_tests", use_container_width=True,
+                    type="primary" if selected_mode == ReviewMode.TEST_GENERATION else "secondary"):
+            selected_mode = ReviewMode.TEST_GENERATION
+    
+    with col3:
+        icon_name, icon_color = mode_icons[ReviewMode.REFACTORING]
+        button_label = f'{icon(Icons.REFACTOR, "1.5em", icon_color)}<br>{mode_short_names[ReviewMode.REFACTORING]}'
+        if st.button(button_label, key="mode_refactor", use_container_width=True,
+                    type="primary" if selected_mode == ReviewMode.REFACTORING else "secondary"):
+            selected_mode = ReviewMode.REFACTORING
+    
+    with col4:
+        icon_name, icon_color = mode_icons[ReviewMode.SECURITY_REVIEW]
+        button_label = f'{icon(Icons.SECURITY, "1.5em", icon_color)}<br>{mode_short_names[ReviewMode.SECURITY_REVIEW]}'
+        if st.button(button_label, key="mode_security", use_container_width=True,
+                    type="primary" if selected_mode == ReviewMode.SECURITY_REVIEW else "secondary"):
+            selected_mode = ReviewMode.SECURITY_REVIEW
+    
+    # Second row: Full Review button (full width)
+    st.markdown("<br>", unsafe_allow_html=True)
+    icon_name, icon_color = mode_icons[ReviewMode.FULL_REVIEW]
+    button_label = f'{icon(Icons.ROBOT, "1.25em", icon_color)} {mode_short_names[ReviewMode.FULL_REVIEW]}'
+    if st.button(button_label, key="mode_full", use_container_width=True,
+                type="primary" if selected_mode == ReviewMode.FULL_REVIEW else "secondary"):
+        selected_mode = ReviewMode.FULL_REVIEW
+    
+    # Update session state if mode changed
     if selected_mode.name != st.session_state.get("analysis_mode", "FULL_REVIEW"):
         st.session_state.analysis_mode = selected_mode.name
         storage.save_analysis_mode(selected_mode.name)
+        st.rerun()
 
     # Render selected mode content
     st.markdown(f"""

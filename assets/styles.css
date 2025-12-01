@@ -60,6 +60,14 @@ code, pre, .stCodeBlock, textarea {
 
 [data-testid="stSidebar"] > div {
     background-color: transparent !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+}
+
+/* Ensure all sidebar content respects width */
+[data-testid="stSidebar"] * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 .main .block-container {
@@ -212,6 +220,15 @@ code, pre, .stCodeBlock, textarea {
     border-radius: var(--radius-md);
     font-family: var(--font-mono);
     padding: 0.75rem;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Sidebar inputs - ensure they fit within sidebar width */
+[data-testid="stSidebar"] .stTextInput > div > div > input {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
 }
 
 .stTextInput > div > div > input:focus,
