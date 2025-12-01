@@ -205,11 +205,52 @@ code, pre, .stCodeBlock, textarea {
     background-color: var(--bg-card);
     border-radius: var(--radius-md);
     border: 1px solid var(--border-primary);
+    transition: all var(--transition-fast);
 }
 
 .stSelectbox > div > div:hover,
 .stMultiSelect > div > div:hover {
     border-color: var(--accent-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.stSelectbox > div > div:focus-within,
+.stMultiSelect > div > div:focus-within {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+}
+
+/* Mode selector dropdown - enhanced styling */
+.stSelectbox [data-baseweb="select"] {
+    font-size: 0.95rem;
+}
+
+.stSelectbox [data-baseweb="select"] > div:first-child {
+    padding: 0.5rem 0.75rem;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+}
+
+/* Dropdown menu styling */
+[data-baseweb="popover"] [role="listbox"] {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-primary) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-lg) !important;
+}
+
+[data-baseweb="popover"] [role="option"] {
+    padding: 0.75rem 1rem !important;
+    transition: all var(--transition-fast) !important;
+}
+
+[data-baseweb="popover"] [role="option"]:hover {
+    background-color: var(--bg-elevated) !important;
+}
+
+[data-baseweb="popover"] [role="option"][aria-selected="true"] {
+    background-color: rgba(88, 166, 255, 0.15) !important;
 }
 
 .stTextInput > div > div > input,

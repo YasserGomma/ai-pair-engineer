@@ -477,20 +477,237 @@ def render_header() -> None:
 
 
 def _render_api_key_input() -> str:
+    # Enhanced API Key Input Styling
+    st.markdown("""
+    <style>
+    /* API Key Input Container */
+    .api-key-container {
+        margin-bottom: 1rem;
+    }
+    
+    .api-key-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    
+    .api-key-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+    
+    .api-key-help {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: rgba(88, 166, 255, 0.1);
+        border: 1px solid rgba(88, 166, 255, 0.3);
+        color: var(--accent-primary);
+        font-size: 0.75rem;
+        cursor: help;
+        transition: all 0.2s;
+    }
+    
+    .api-key-help:hover {
+        background: rgba(88, 166, 255, 0.2);
+        border-color: var(--accent-primary);
+    }
+    
+    .api-key-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: var(--radius-md);
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-top: 0.5rem;
+    }
+    
+    .api-key-status.valid {
+        background: rgba(126, 231, 135, 0.1);
+        border: 1px solid rgba(126, 231, 135, 0.3);
+        color: var(--accent-secondary);
+    }
+    
+    .api-key-status.invalid {
+        background: rgba(248, 81, 73, 0.1);
+        border: 1px solid rgba(248, 81, 73, 0.3);
+        color: var(--accent-error);
+    }
+    
+    .api-key-link {
+        color: var(--accent-primary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 0.5rem;
+        transition: all 0.2s;
+    }
+    
+    .api-key-link:hover {
+        color: var(--accent-purple);
+        text-decoration: underline;
+    }
+    
+    /* Enhanced input field styling */
+    div[data-testid="stTextInput"]:has(input[type="password"]),
+    div[data-testid="stTextInput"]:has(input[type="text"]) {
+        position: relative;
+    }
+    
+    .api-key-hint {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    /* Toggle button styling */
+    button[key="toggle_api_key_visibility"] {
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border-primary) !important;
+        color: var(--text-secondary) !important;
+        padding: 0.5rem !important;
+        min-height: 38px !important;
+        transition: all 0.2s !important;
+    }
+    
+    button[key="toggle_api_key_visibility"]:hover {
+        background: var(--bg-elevated) !important;
+        border-color: var(--accent-primary) !important;
+        color: var(--accent-primary) !important;
+    }
+    
+    /* Input field enhancement */
+    div[data-testid="stTextInput"] input[type="password"],
+    div[data-testid="stTextInput"] input[type="text"] {
+        font-family: var(--font-mono) !important;
+        letter-spacing: 0.05em !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
     api_key = ""
+    api_key_source = None
+    
+    # Check for API key in secrets
     try:
         if "OPENROUTER_API_KEY" in st.secrets:
             api_key = st.secrets["OPENROUTER_API_KEY"]
-            st.success("Using API key from secrets")
+            api_key_source = "secrets"
     except Exception:
         pass
+    
+    # Check for API key in environment
     if not api_key and os.getenv("OPENROUTER_API_KEY"):
         api_key = os.getenv("OPENROUTER_API_KEY")
-        st.success("Using API key from environment")
-    if not api_key:
-        api_key = st.text_input("OpenRouter API Key", type="password", help="Get your API key from openrouter.ai/keys", value=st.session_state.get("api_key", ""))
+        api_key_source = "environment"
+    
+    # Render header with help icon
+    st.markdown("""
+    <div class="api-key-header">
+        <div class="api-key-label">
+            <i class="fas fa-key" style="color: var(--accent-primary);"></i>
+            <span>OpenRouter API Key</span>
+        </div>
+        <div class="api-key-help" title="Get your API key from openrouter.ai/keys">?</div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Show status if key is loaded from secrets/env
+    if api_key_source:
+        status_icon = icon(Icons.CHECK, "0.9em", "#7ee787")
+        status_text = f"Using API key from {api_key_source}"
+        st.markdown(f"""
+        <div class="api-key-status valid">
+            {status_icon} {status_text}
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        # Manual input with enhanced styling
+        current_key = st.session_state.get("api_key", "")
+        
+        # Toggle visibility state
+        if "api_key_visible" not in st.session_state:
+            st.session_state.api_key_visible = False
+        
+        # Create layout for input and toggle button
+        input_col, toggle_col = st.columns([5, 1])
+        
+        with input_col:
+            # Input field - use password type and handle visibility via custom CSS/JS if needed
+            # For now, use password type for security
+            api_key = st.text_input(
+                "OpenRouter API Key",
+                type="password" if not st.session_state.api_key_visible else "text",
+                value=current_key,
+                placeholder="sk-or-v1-...",
+                help="",
+                label_visibility="collapsed",
+                key="api_key_input"
+            )
+        
+        with toggle_col:
+            st.markdown("<br>", unsafe_allow_html=True)  # Align with input
+            eye_icon_name = "eye-slash" if st.session_state.api_key_visible else "eye"
+            eye_icon_html = icon(eye_icon_name, "1.1em", "#8b949e")
+            toggle_label = f'{eye_icon_html}'
+            if st.button(toggle_label, key="toggle_api_key_visibility", help="Toggle visibility", use_container_width=True):
+                st.session_state.api_key_visible = not st.session_state.api_key_visible
+                # Preserve the current key value when toggling
         if api_key:
             st.session_state["api_key"] = api_key
+                st.rerun()
+        
+        # Validation and status
+        if api_key:
+            is_valid, error_msg = validate_api_key(api_key)
+            if is_valid:
+                status_icon = icon(Icons.CHECK, "0.9em", "#7ee787")
+                st.markdown(f"""
+                <div class="api-key-status valid">
+                    {status_icon} Valid API key format
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                status_icon = icon(Icons.EXCLAMATION, "0.9em", "#f85149")
+                st.markdown(f"""
+                <div class="api-key-status invalid">
+                    {status_icon} {error_msg}
+                </div>
+                """, unsafe_allow_html=True)
+        
+        # Help link and hint
+        st.markdown(f"""
+        <div>
+            <a href="https://openrouter.ai/keys" target="_blank" class="api-key-link">
+                <i class="fas fa-external-link-alt"></i>
+                Get your API key from OpenRouter
+            </a>
+        </div>
+        <div class="api-key-hint">
+            <i class="fas fa-info-circle" style="color: var(--text-muted);"></i>
+            Your API key is stored in session and never sent to our servers
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Save to session state
+        if api_key != current_key:
+            st.session_state["api_key"] = api_key
+    
     return api_key
 
 
@@ -826,97 +1043,70 @@ def render_review_tabs(code_input: str, api_key: str, language: str, context: st
     }
     </style>""", unsafe_allow_html=True)
 
-    # Add enhanced styling for mode selector buttons
+    # Add enhanced styling for mode selector dropdown
     st.markdown("""
     <style>
-    /* Enhanced mode button styling */
-    button[key*="mode_"] {
-        min-height: 105px !important;
-        border-radius: var(--radius-lg) !important;
-        border: 2px solid var(--border-primary) !important;
-        background: var(--bg-card) !important;
-        transition: all 0.25s ease !important;
-        font-weight: 600 !important;
-        font-size: 0.9rem !important;
-        box-shadow: var(--shadow-sm) !important;
-        padding: 1rem 0.5rem !important;
+    /* Enhanced mode dropdown styling */
+    .mode-select-container {
+        margin-bottom: 1rem;
     }
-    
-    button[key*="mode_"]:hover {
+
+    .mode-select-container .stSelectbox > div > div {
+        background: var(--bg-card) !important;
+        border: 2px solid var(--border-primary) !important;
+        border-radius: var(--radius-lg) !important;
+        padding: 0.25rem !important;
+        transition: all 0.25s ease !important;
+    }
+
+    .mode-select-container .stSelectbox > div > div:hover {
         border-color: var(--accent-primary) !important;
-        background: var(--bg-elevated) !important;
-        transform: translateY(-2px) !important;
         box-shadow: var(--shadow-md) !important;
     }
-    
-    /* Active/selected primary buttons */
-    button[key*="mode_"][data-baseButton-kind="primary"] {
-        background: linear-gradient(135deg, rgba(88, 166, 255, 0.2) 0%, rgba(88, 166, 255, 0.1) 100%) !important;
+
+    .mode-select-container .stSelectbox > div > div:focus-within {
         border-color: var(--accent-primary) !important;
-        color: var(--accent-primary) !important;
         box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15), var(--shadow-md) !important;
     }
-    
-    button[key*="mode_"][data-baseButton-kind="primary"]:hover {
-        background: linear-gradient(135deg, rgba(88, 166, 255, 0.25) 0%, rgba(88, 166, 255, 0.15) 100%) !important;
-    }
-    
-    /* Full review button - different styling */
-    button[key*="mode_full"] {
-        min-height: 65px !important;
-        margin-top: 0.75rem !important;
+
+    /* Dropdown option styling */
+    .mode-select-container .stSelectbox [data-baseweb="select"] > div {
+        font-weight: 600 !important;
         font-size: 1rem !important;
-        padding: 0.875rem 1.5rem !important;
-    }
-    
-    @media (max-width: 768px) {
-        button[key*="mode_"] {
-            min-height: 95px !important;
-            font-size: 0.85rem !important;
-            padding: 0.875rem 0.5rem !important;
-        }
-        
-        button[key*="mode_full"] {
-            min-height: 60px !important;
-            font-size: 0.9rem !important;
-        }
     }
     </style>
     """, unsafe_allow_html=True)
-    
-    # Render mode selector using Streamlit buttons with emoji icons
-    col1, col2, col3, col4 = st.columns(4, gap="small")
-    
-    with col1:
-        if st.button("🔍 Design Flaws", key="mode_design", use_container_width=True, 
-                    type="primary" if selected_mode == ReviewMode.DESIGN_FLAWS else "secondary"):
-            selected_mode = ReviewMode.DESIGN_FLAWS
-    
-    with col2:
-        if st.button("🧪 Generate Tests", key="mode_tests", use_container_width=True,
-                    type="primary" if selected_mode == ReviewMode.TEST_GENERATION else "secondary"):
-            selected_mode = ReviewMode.TEST_GENERATION
-    
-    with col3:
-        if st.button("♻️ Refactoring", key="mode_refactor", use_container_width=True,
-                    type="primary" if selected_mode == ReviewMode.REFACTORING else "secondary"):
-            selected_mode = ReviewMode.REFACTORING
-    
-    with col4:
-        if st.button("🔒 Security Audit", key="mode_security", use_container_width=True,
-                    type="primary" if selected_mode == ReviewMode.SECURITY_REVIEW else "secondary"):
-            selected_mode = ReviewMode.SECURITY_REVIEW
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("🤖 Full Review", key="mode_full", use_container_width=True,
-                type="primary" if selected_mode == ReviewMode.FULL_REVIEW else "secondary"):
-        selected_mode = ReviewMode.FULL_REVIEW
-    
+
+    # Mode options with emojis for dropdown
+    mode_options = {
+        "🔍 Design Flaws — Detect SOLID violations and code smells": ReviewMode.DESIGN_FLAWS,
+        "🧪 Generate Tests — Create comprehensive unit tests": ReviewMode.TEST_GENERATION,
+        "♻️ Refactoring — Suggest clean code transformations": ReviewMode.REFACTORING,
+        "🔒 Security Audit — OWASP Top 10 vulnerability analysis": ReviewMode.SECURITY_REVIEW,
+        "🤖 Full Review — Comprehensive analysis covering all aspects": ReviewMode.FULL_REVIEW
+    }
+
+    # Reverse mapping for default selection
+    mode_to_option = {v: k for k, v in mode_options.items()}
+    default_option = mode_to_option.get(selected_mode, list(mode_options.keys())[4])
+
+    # Render dropdown
+    st.markdown('<div class="mode-select-container">', unsafe_allow_html=True)
+    selected_option = st.selectbox(
+        "Select Review Mode",
+        options=list(mode_options.keys()),
+        index=list(mode_options.keys()).index(default_option),
+        key="mode_selector",
+        label_visibility="collapsed"
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    selected_mode = mode_options[selected_option]
+
     # Update session state if mode changed
     if selected_mode.name != st.session_state.get("analysis_mode", "FULL_REVIEW"):
         st.session_state.analysis_mode = selected_mode.name
         storage.save_analysis_mode(selected_mode.name)
-        st.rerun()
 
     # Render selected mode description card
     st.markdown(f"""
