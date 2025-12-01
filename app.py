@@ -674,6 +674,19 @@ def _render_api_key_input() -> str:
         color: var(--accent-purple);
         text-decoration: underline;
     }
+    
+    .api-key-hint {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-top: 0.375rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    div[data-testid="stTextInput"] + div[data-testid="stTextInput"] {
+        display: none;
+    }
     </style>
     """, unsafe_allow_html=True)
     
@@ -729,6 +742,13 @@ def _render_api_key_input() -> str:
                 label_visibility="collapsed",
                 key="api_key_input"
             )
+            if not api_key:
+                st.markdown("""
+                <div class="api-key-hint">
+                    <i class="fas fa-info-circle" style="font-size: 0.65rem;"></i>
+                    <span>Press Enter to apply</span>
+                </div>
+                """, unsafe_allow_html=True)
         
         with toggle_col:
             toggle_text = "🙈" if st.session_state.api_key_visible else "👁️"
@@ -737,6 +757,8 @@ def _render_api_key_input() -> str:
                 if api_key:
                     st.session_state["api_key"] = api_key
                 st.rerun()
+            if not api_key:
+                st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
         
         if api_key:
             is_valid, error_msg = validate_api_key(api_key)
