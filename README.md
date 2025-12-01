@@ -188,7 +188,7 @@ The app tracks API usage in real-time via OpenRouter with **pre-analysis cost es
 - **Cost Estimation**: Pre-analysis cost estimates based on code length
 - **Prompt Engineering**: Mode-specific expert prompts with structured output
 - **Response Time**: ~5 seconds per analysis
-- **Input Validation**: Code length limits (10-50,000 characters), file size limits (500KB)
+- **Input Validation**: Code length limits (10-100,000 characters), file size limits (500KB)
 - **Error Handling**: Comprehensive error messages for API issues
 - **Security**: API key validation (supports secrets, env vars, manual input)
 - **Persistent Storage**: JSON-based storage in `.data/` directory (history, results, settings)

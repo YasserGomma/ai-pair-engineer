@@ -42,7 +42,7 @@ def load_css() -> None:
 load_css()
 
 MIN_CODE_LENGTH = 10
-MAX_CODE_LENGTH = 50000
+MAX_CODE_LENGTH = 100000
 DEFAULT_MAX_TOKENS = 4000
 DEFAULT_TEMPERATURE = 0.3
 DEFAULT_MODEL = "openai/gpt-4o-mini"
@@ -581,14 +581,22 @@ def _render_api_key_input() -> str:
         border: 1px solid var(--border-primary) !important;
         color: var(--text-secondary) !important;
         padding: 0.5rem !important;
+        height: 38px !important;
         min-height: 38px !important;
+        max-height: 38px !important;
         transition: all 0.2s !important;
+        font-size: 1.2rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
     }
     
     button[key="toggle_api_key_visibility"]:hover {
         background: var(--bg-elevated) !important;
         border-color: var(--accent-primary) !important;
         color: var(--accent-primary) !important;
+        transform: scale(1.05) !important;
     }
     
     /* Input field enhancement */
@@ -596,6 +604,13 @@ def _render_api_key_input() -> str:
     div[data-testid="stTextInput"] input[type="text"] {
         font-family: var(--font-mono) !important;
         letter-spacing: 0.05em !important;
+        height: 38px !important;
+    }
+    
+    /* Ensure columns align properly */
+    div[data-testid="column"]:has(button[key="toggle_api_key_visibility"]) {
+        display: flex;
+        align-items: flex-start;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -644,33 +659,32 @@ def _render_api_key_input() -> str:
         if "api_key_visible" not in st.session_state:
             st.session_state.api_key_visible = False
         
-        # Create layout for input and toggle button
-        input_col, toggle_col = st.columns([5, 1])
-        
-        with input_col:
-            # Input field - use password type and handle visibility via custom CSS/JS if needed
-            # For now, use password type for security
-            api_key = st.text_input(
-                "OpenRouter API Key",
-                type="password" if not st.session_state.api_key_visible else "text",
-                value=current_key,
-                placeholder="sk-or-v1-...",
-                help="",
-                label_visibility="collapsed",
-                key="api_key_input"
-            )
-        
-        with toggle_col:
-            st.markdown("<br>", unsafe_allow_html=True)  # Align with input
-            eye_icon_name = "eye-slash" if st.session_state.api_key_visible else "eye"
-            eye_icon_html = icon(eye_icon_name, "1.1em", "#8b949e")
-            toggle_label = f'{eye_icon_html}'
-            if st.button(toggle_label, key="toggle_api_key_visibility", help="Toggle visibility", use_container_width=True):
-                st.session_state.api_key_visible = not st.session_state.api_key_visible
-                # Preserve the current key value when toggling
-                if api_key:
-                    st.session_state["api_key"] = api_key
-                st.rerun()
+        # Create layout for input and toggle button with better alignment
+        input_container = st.container()
+        with input_container:
+            input_col, toggle_col = st.columns([5, 1], gap="small")
+            
+            with input_col:
+                # Input field
+                api_key = st.text_input(
+                    "OpenRouter API Key",
+                    type="password" if not st.session_state.api_key_visible else "text",
+                    value=current_key,
+                    placeholder="sk-or-v1-...",
+                    help="",
+                    label_visibility="collapsed",
+                    key="api_key_input"
+                )
+            
+            with toggle_col:
+                # Toggle button aligned with input
+                toggle_text = "🙈" if st.session_state.api_key_visible else "👁️"
+                if st.button(toggle_text, key="toggle_api_key_visibility", help="Toggle visibility", use_container_width=True):
+                    st.session_state.api_key_visible = not st.session_state.api_key_visible
+                    # Preserve the current key value when toggling
+                    if api_key:
+                        st.session_state["api_key"] = api_key
+                    st.rerun()
         
         # Validation and status
         if api_key:
