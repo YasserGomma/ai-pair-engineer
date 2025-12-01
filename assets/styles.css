@@ -456,32 +456,325 @@ hr {
     animation: pulse-glow 2s ease-in-out infinite;
 }
 
+/* ============================================
+   RESPONSIVE DESIGN - Mobile First Approach
+   ============================================ */
+
+/* Tablet and below (max-width: 1024px) */
+@media (max-width: 1024px) {
+    .main .block-container {
+        padding: 1.5rem 2rem;
+        max-width: 100%;
+    }
+    
+    /* Make columns stack on tablet */
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column !important;
+    }
+    
+    [data-testid="stHorizontalBlock"] > div {
+        width: 100% !important;
+    }
+}
+
+/* Mobile and small tablets (max-width: 768px) */
 @media (max-width: 768px) {
     .main-header {
         font-size: 1.75rem;
+        line-height: 1.3;
     }
+    
     .sub-header {
         font-size: 0.95rem;
     }
+    
+    .main .block-container {
+        padding: 1rem 1.5rem;
+    }
+    
+    /* Sidebar adjustments */
+    [data-testid="stSidebar"] {
+        min-width: 200px !important;
+    }
+    
+    /* Stack all columns */
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+    
+    [data-testid="stHorizontalBlock"] > div {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+    
+    /* Radio buttons - stack vertically on mobile */
+    div[data-testid="stRadio"] > div[role="radiogroup"] {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+    }
+    
+    div[data-testid="stRadio"] > div[role="radiogroup"] > label {
+        width: 100% !important;
+        min-width: 100% !important;
+        border-radius: var(--radius-md) !important;
+        margin: 0 !important;
+    }
+    
+    /* Horizontal radio buttons - make them wrap */
+    div[data-testid="stHorizontalBlock"] .stRadio > div[role="radiogroup"] {
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+    }
+    
+    div[data-testid="stHorizontalBlock"] .stRadio label {
+        flex: 1 1 auto !important;
+        min-width: calc(50% - 0.25rem) !important;
+        border-radius: var(--radius-md) !important;
+    }
+    
+    /* Tabs */
     .stTabs [data-baseweb="tab"] {
         padding: 8px 12px;
         font-size: 0.8rem;
     }
-    .main .block-container {
-        padding: 1rem;
+    
+    /* Buttons - make them touch-friendly */
+    .stButton > button {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        min-height: 44px; /* Touch target size */
     }
+    
+    /* Text inputs and textareas */
+    .stTextInput > div > div > input,
+    .stTextArea > div > div > textarea {
+        padding: 0.875rem;
+        font-size: 0.9rem;
+        min-height: 44px; /* Touch target size */
+    }
+    
+    .stTextArea > div > div > textarea {
+        min-height: 250px;
+    }
+    
+    /* Metrics */
     [data-testid="stMetric"] {
         padding: 0.75rem;
     }
+    
+    /* File uploader */
+    [data-testid="stFileUploader"] {
+        padding: 1rem;
+    }
+    
+    /* Code blocks */
+    .stCodeBlock pre,
+    .stMarkdown pre {
+        padding: 0.75rem !important;
+        font-size: 0.85rem !important;
+    }
+    
+    /* Review mode cards */
+    .review-mode-card {
+        padding: 1rem;
+    }
+    
+    /* Cost badge */
+    .cost-badge {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        flex-wrap: wrap;
+    }
+    
+    /* Footer metrics - stack on mobile */
+    [data-testid="stHorizontalBlock"] [data-testid="stMetric"] {
+        margin-bottom: 0.5rem;
+    }
 }
 
+/* Small mobile devices (max-width: 480px) */
 @media (max-width: 480px) {
     .main-header {
         font-size: 1.5rem;
+        line-height: 1.2;
     }
+    
+    .sub-header {
+        font-size: 0.9rem;
+    }
+    
+    .main .block-container {
+        padding: 0.75rem 1rem;
+    }
+    
+    /* Sidebar - make it collapsible friendly */
+    [data-testid="stSidebar"] {
+        min-width: 180px !important;
+    }
+    
+    /* Radio buttons - full width on small screens */
+    div[data-testid="stRadio"] > div[role="radiogroup"] > label {
+        width: 100% !important;
+        padding: 0.75rem 1rem !important;
+    }
+    
+    div[data-testid="stHorizontalBlock"] .stRadio label {
+        min-width: 100% !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    /* Tabs - smaller padding */
     .stTabs [data-baseweb="tab"] {
         padding: 6px 8px;
+        font-size: 0.75rem;
+    }
+    
+    /* Buttons */
+    .stButton > button {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.85rem;
+    }
+    
+    /* Text inputs */
+    .stTextInput > div > div > input,
+    .stTextArea > div > div > textarea {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+    
+    .stTextArea > div > div > textarea {
+        min-height: 200px;
+    }
+    
+    /* Metrics - smaller padding */
+    [data-testid="stMetric"] {
+        padding: 0.625rem;
+    }
+    
+    [data-testid="stMetricValue"] {
+        font-size: 1.25rem !important;
+    }
+    
+    [data-testid="stMetricLabel"] {
+        font-size: 0.7rem !important;
+    }
+    
+    /* File uploader */
+    [data-testid="stFileUploader"] {
+        padding: 0.75rem;
+    }
+    
+    /* Code blocks - smaller font */
+    .stCodeBlock pre,
+    .stMarkdown pre {
+        padding: 0.625rem !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .stCodeBlock code,
+    .stMarkdown code {
+        font-size: 0.8rem !important;
+    }
+    
+    /* Review mode cards */
+    .review-mode-card {
+        padding: 0.875rem;
+    }
+    
+    .mode-header h3 {
+        font-size: 1.1rem !important;
+    }
+    
+    .mode-description {
+        font-size: 0.85rem !important;
+    }
+    
+    /* Cost badge */
+    .cost-badge {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.25rem !important;
+    }
+    
+    /* Expanders */
+    .streamlit-expanderHeader {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.9rem;
+    }
+    
+    .streamlit-expanderContent {
+        padding: 0.75rem;
+    }
+    
+    /* History items */
+    .history-item {
+        padding: 0.75rem;
+    }
+    
+    /* Select boxes and inputs */
+    .stSelectbox > div > div,
+    .stMultiSelect > div > div {
+        padding: 0.5rem;
+    }
+    
+    /* Sliders */
+    .stSlider {
+        padding: 0.5rem 0;
+    }
+}
+
+/* Extra small devices (max-width: 360px) */
+@media (max-width: 360px) {
+    .main-header {
+        font-size: 1.25rem;
+    }
+    
+    .sub-header {
+        font-size: 0.85rem;
+    }
+    
+    .main .block-container {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        padding: 5px 6px;
         font-size: 0.7rem;
+    }
+    
+    .stButton > button {
+        padding: 0.625rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    [data-testid="stMetricValue"] {
+        font-size: 1.1rem !important;
+    }
+}
+
+/* Landscape orientation on mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .main .block-container {
+        padding: 1rem 1.5rem;
+    }
+    
+    .stTextArea > div > div > textarea {
+        min-height: 180px;
+    }
+}
+
+/* Print styles */
+@media print {
+    [data-testid="stSidebar"] {
+        display: none !important;
+    }
+    
+    .main .block-container {
+        max-width: 100%;
+        padding: 1rem;
     }
 }
 
@@ -511,4 +804,154 @@ hr {
     font-weight: 900;
     margin-right: 8px;
     display: inline-block;
+}
+
+/* ============================================
+   ADDITIONAL RESPONSIVE FIXES
+   ============================================ */
+
+/* Ensure proper viewport handling */
+html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+/* Make sure columns stack properly on mobile */
+@media (max-width: 768px) {
+    /* Force column stacking */
+    [data-testid="column"] {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+    
+    /* Review mode selector - make it vertical on mobile */
+    div[data-testid="stHorizontalBlock"]:has(.stRadio) .stRadio > div[role="radiogroup"] {
+        flex-direction: column !important;
+    }
+    
+    /* Review type selector (File/Project) - stack on very small screens */
+    @media (max-width: 480px) {
+        div[data-testid="stHorizontalBlock"]:has([key*="review_type_selector"]) .stRadio > div[role="radiogroup"] {
+            flex-direction: column !important;
+        }
+        
+        div[data-testid="stHorizontalBlock"]:has([key*="review_type_selector"]) .stRadio label {
+            border-radius: var(--radius-md) !important;
+        }
+    }
+}
+
+/* Improve touch targets on mobile */
+@media (max-width: 768px) {
+    /* Make all interactive elements touch-friendly */
+    .stSelectbox > div > div,
+    .stMultiSelect > div > div,
+    .stButton > button,
+    .stDownloadButton > button,
+    .streamlit-expanderHeader,
+    div[data-testid="stRadio"] > div[role="radiogroup"] > label {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* File uploader touch target */
+    [data-testid="stFileUploader"] label {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Inline styled radio buttons from app.py - make responsive */
+    div[data-testid="stHorizontalBlock"] > div:first-child .stRadio > div[role="radiogroup"] {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+    }
+    
+    div[data-testid="stHorizontalBlock"] > div:first-child .stRadio label {
+        width: 100% !important;
+        border-radius: var(--radius-md) !important;
+        margin: 0 !important;
+    }
+    
+    /* Analysis mode selector - stack on mobile */
+    div[data-testid="stRadio"]:has([key*="analysis_mode_selector"]) > div[role="radiogroup"] {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+    }
+    
+    div[data-testid="stRadio"]:has([key*="analysis_mode_selector"]) > div[role="radiogroup"] > label {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+}
+
+/* Prevent horizontal overflow */
+body, .stApp, .main {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+/* Code blocks - prevent horizontal overflow */
+.stCodeBlock pre,
+.stMarkdown pre {
+    overflow-x: auto;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+/* Tables - make them scrollable on mobile */
+@media (max-width: 768px) {
+    .stMarkdown table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Improve spacing on mobile */
+@media (max-width: 768px) {
+    hr {
+        margin: 1rem 0;
+    }
+    
+    .stMarkdown h1,
+    .stMarkdown h2,
+    .stMarkdown h3 {
+        margin-top: 1rem;
+        margin-bottom: 0.75rem;
+    }
+}
+
+/* Sidebar improvements for mobile */
+@media (max-width: 768px) {
+    [data-testid="stSidebar"] {
+        padding: 1rem 0.75rem;
+    }
+    
+    [data-testid="stSidebar"] .stMarkdown {
+        font-size: 0.9rem;
+    }
+    
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3 {
+        font-size: 1.1rem;
+    }
+}
+
+/* Footer metrics - responsive grid */
+@media (max-width: 768px) {
+    [data-testid="stHorizontalBlock"]:has([data-testid="stMetric"]) {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.75rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    [data-testid="stHorizontalBlock"]:has([data-testid="stMetric"]) {
+        grid-template-columns: 1fr !important;
+    }
 }
