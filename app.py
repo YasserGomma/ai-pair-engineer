@@ -12,7 +12,6 @@ import logging
 import os
 from dotenv import load_dotenv
 from ui_components import load_font_awesome, icon, Icons, render_icon_text
-import storage
 
 load_dotenv()
 
@@ -267,19 +266,17 @@ class ReviewMode(Enum):
 
 
 class SessionStateManager:
-    """Manages Streamlit session state with persistent storage."""
+    """Manages Streamlit session state - session-only (device-specific)."""
 
     @staticmethod
     def init() -> None:
         if "initialized" not in st.session_state:
-            st.session_state.history = storage.load_history()
-            st.session_state.total_tokens = storage.get_tokens()
-            st.session_state.total_cost = storage.get_cost()
-            for mode_name, result in storage.load_results().items():
-                st.session_state[f"result_{mode_name}"] = result
-            st.session_state.code_input = storage.get_code_input()
-            st.session_state.review_mode = storage.get_review_mode()
-            st.session_state.analysis_mode = storage.get_analysis_mode()
+            st.session_state.history = []
+            st.session_state.total_tokens = {"input": 0, "output": 0}
+            st.session_state.total_cost = 0.0
+            st.session_state.code_input = ""
+            st.session_state.review_mode = "file"
+            st.session_state.analysis_mode = "FULL_REVIEW"
             st.session_state.api_key = ""
             st.session_state.initialized = True
 
@@ -289,12 +286,15 @@ class SessionStateManager:
 
     @staticmethod
     def add_to_history(entry: dict) -> None:
-        st.session_state.history = storage.add_history_entry(entry)
+        if "history" not in st.session_state:
+            st.session_state.history = []
+        st.session_state.history.insert(0, entry)
+        if len(st.session_state.history) > 50:
+            st.session_state.history = st.session_state.history[:50]
 
     @staticmethod
     def clear_history() -> None:
         st.session_state.history = []
-        storage.clear_history()
         keys_to_remove = [key for key in st.session_state.keys() if key.startswith("history_expanded_") or key.startswith("show_history_result_")]
         for key in keys_to_remove:
             del st.session_state[key]
@@ -309,7 +309,6 @@ class SessionStateManager:
             st.session_state.total_tokens = {"input": 0, "output": 0}
         st.session_state.total_tokens["input"] += input_tokens
         st.session_state.total_tokens["output"] += output_tokens
-        storage.add_tokens(input_tokens, output_tokens)
 
     @staticmethod
     def get_cost() -> float:
@@ -317,14 +316,14 @@ class SessionStateManager:
 
     @staticmethod
     def add_cost(cost: float) -> None:
+        if "total_cost" not in st.session_state:
+            st.session_state.total_cost = 0.0
         st.session_state.total_cost += cost
-        storage.add_cost(cost)
 
     @staticmethod
     def reset_cost_tracker() -> None:
         st.session_state.total_tokens = {"input": 0, "output": 0}
         st.session_state.total_cost = 0.0
-        storage.reset_cost_tracker()
 
     @staticmethod
     def get_result(mode_name: str) -> Optional[str]:
@@ -333,20 +332,17 @@ class SessionStateManager:
     @staticmethod
     def set_result(mode_name: str, result: str) -> None:
         st.session_state[f"result_{mode_name}"] = result
-        storage.save_result(mode_name, result)
 
     @staticmethod
     def clear_result(mode_name: str) -> None:
         if f"result_{mode_name}" in st.session_state:
             del st.session_state[f"result_{mode_name}"]
-        storage.clear_result(mode_name)
 
     @staticmethod
     def clear_all_results() -> None:
         keys_to_remove = [key for key in st.session_state.keys() if key.startswith("result_")]
         for key in keys_to_remove:
             del st.session_state[key]
-        storage.clear_all_results()
 
 
 class APIError(Exception):
@@ -864,7 +860,6 @@ def render_code_input() -> Tuple[str, Optional[str]]:
                 # Check if this is a new file upload
                 if st.session_state.get("code_input", "") != file_content:
                     st.session_state["code_input"] = file_content
-                    storage.save_code_input(file_content)
                     file_just_uploaded = True
                 detected_language = detect_language_from_extension(uploaded_file.name)
                 st.success(f"Loaded `{uploaded_file.name}`" + (f" - Detected: **{detected_language}**" if detected_language else ""))
@@ -877,7 +872,6 @@ def render_code_input() -> Tuple[str, Optional[str]]:
         code_input = st.session_state.get("code_input", "")
     elif code_input != st.session_state.get("code_input", ""):
         st.session_state["code_input"] = code_input
-        storage.save_code_input(code_input)
     if code_input:
         st.caption(f"**{len(code_input.split(chr(10)))}** lines | **{len(code_input):,}** characters")
     
@@ -957,12 +951,10 @@ def render_code_input() -> Tuple[str, Optional[str]]:
     with col1:
         if st.button("Load Example Code", use_container_width=True, key="load_example"):
             st.session_state["code_input"] = EXAMPLE_CODE
-            storage.save_code_input(EXAMPLE_CODE)
             st.rerun()
     with col2:
         if st.button("Clear Code", use_container_width=True, key="clear_code"):
             st.session_state["code_input"] = ""
-            storage.save_code_input("")
             st.rerun()
     return code_input, detected_language
 
@@ -1253,7 +1245,6 @@ def render_review_tabs(code_input: str, api_key: str, language: str, context: st
 
     if selected_mode.name != st.session_state.get("analysis_mode", "FULL_REVIEW"):
         st.session_state.analysis_mode = selected_mode.name
-        storage.save_analysis_mode(selected_mode.name)
 
     st.markdown(f"""
     <div class="review-mode-card">
@@ -1372,7 +1363,6 @@ def main() -> None:
     current_mode = "project" if "Project" in review_mode else "file"
     if current_mode != st.session_state.get("review_mode", "file"):
         st.session_state.review_mode = current_mode
-        storage.save_review_mode(current_mode)
     
     # Inject Font Awesome icons via CSS
     st.markdown("""
