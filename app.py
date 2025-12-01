@@ -932,15 +932,21 @@ def main() -> None:
 
     # Mode switcher with styled tabs
     st.markdown("""<style>
-    div[data-testid="stHorizontalBlock"] > div:first-child .stRadio > div { flex-direction: row; gap: 0; }
+    div[data-testid="stHorizontalBlock"] > div:first-child .stRadio > div {
+        flex-direction: row; gap: 0; flex-wrap: wrap;
+    }
     div[data-testid="stHorizontalBlock"] > div:first-child .stRadio label {
         background: #161b22; border: 1px solid #30363d; padding: 0.5rem 1.5rem;
-        margin: 0; cursor: pointer; transition: all 0.2s;
+        margin: 0; cursor: pointer; transition: all 0.2s; white-space: nowrap;
     }
     div[data-testid="stHorizontalBlock"] > div:first-child .stRadio label:first-of-type { border-radius: 8px 0 0 8px; }
     div[data-testid="stHorizontalBlock"] > div:first-child .stRadio label:last-of-type { border-radius: 0 8px 8px 0; }
     div[data-testid="stHorizontalBlock"] > div:first-child .stRadio label[data-checked="true"] {
         background: #58a6ff; border-color: #58a6ff; color: #0a0e14; font-weight: 600;
+    }
+    @media (max-width: 600px) {
+        div[data-testid="stHorizontalBlock"] > div:first-child .stRadio > div { flex-direction: column; gap: 0.5rem; }
+        div[data-testid="stHorizontalBlock"] > div:first-child .stRadio label { border-radius: 8px !important; }
     }
     </style>""", unsafe_allow_html=True)
 

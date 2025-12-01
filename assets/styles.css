@@ -64,7 +64,20 @@ code, pre, .stCodeBlock, textarea {
 
 .main .block-container {
     padding: 2rem 3rem;
-    max-width: 1400px;
+    max-width: 1200px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure columns are flexible and don't break on resize */
+[data-testid="stHorizontalBlock"] {
+    flex-wrap: wrap !important;
+    gap: 1rem;
+}
+
+[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+    min-width: 280px;
+    flex: 1 1 auto !important;
 }
 
 .main-header {
@@ -494,7 +507,9 @@ hr {
     
     /* Sidebar adjustments */
     [data-testid="stSidebar"] {
-        min-width: 200px !important;
+        min-width: 260px !important;
+        max-width: 260px !important;
+        width: 260px !important;
     }
     
     /* Stack all columns */
@@ -610,7 +625,9 @@ hr {
     
     /* Sidebar - make it collapsible friendly */
     [data-testid="stSidebar"] {
-        min-width: 180px !important;
+        min-width: 240px !important;
+        max-width: 240px !important;
+        width: 240px !important;
     }
     
     /* Radio buttons - full width on small screens */
@@ -812,15 +829,23 @@ hr {
 
 /* Fix sidebar width to prevent layout disturbance */
 [data-testid="stSidebar"] {
-    min-width: 280px !important;
-    max-width: 400px !important;
-    width: 320px !important;
-    transition: none !important;
+    min-width: 300px !important;
+    max-width: 300px !important;
+    width: 300px !important;
+    flex-shrink: 0 !important;
 }
 
 [data-testid="stSidebar"][aria-expanded="false"] {
     min-width: 0 !important;
+    max-width: 0 !important;
     width: 0 !important;
+}
+
+/* Disable sidebar resizer to prevent layout issues */
+[data-testid="stSidebar"] [data-testid="stSidebarResizer"],
+[data-testid="stSidebar"]::after {
+    display: none !important;
+    pointer-events: none !important;
 }
 
 /* Main content should fill remaining space */
@@ -834,6 +859,28 @@ hr {
 section[data-testid="stSidebarContent"] {
     width: 100% !important;
     overflow-x: hidden;
+}
+
+/* Main content area - independent of sidebar */
+.main {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+}
+
+/* Two-column layouts - stack when space is limited */
+@media (max-width: 900px) {
+    [data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+        min-width: 100% !important;
+        width: 100% !important;
+    }
+}
+
+/* Prevent content overflow when sidebar resizes */
+[data-testid="stMainBlockContainer"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
 }
 
 /* ============================================
