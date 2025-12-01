@@ -563,11 +563,36 @@ hr {
         padding: 1rem 1.5rem;
     }
     
-    /* Sidebar adjustments */
+    /* Sidebar - collapsed by default on mobile */
     [data-testid="stSidebar"] {
         min-width: 260px !important;
-        max-width: 260px !important;
+        max-width: 280px !important;
         width: 260px !important;
+    }
+    
+    /* Ensure sidebar overlay works properly on mobile */
+    [data-testid="stSidebar"][aria-expanded="true"] {
+        position: fixed !important;
+        z-index: 999 !important;
+        box-shadow: var(--shadow-lg) !important;
+    }
+    
+    /* Sidebar toggle button - make it more prominent on mobile */
+    [data-testid="stSidebar"] [data-testid="baseButton-header"],
+    button[data-testid="baseButton-header"] {
+        min-height: 44px !important;
+        min-width: 44px !important;
+        padding: 0.75rem !important;
+    }
+    
+    /* Main content - full width on mobile when sidebar is collapsed */
+    .main {
+        width: 100% !important;
+    }
+    
+    /* Sidebar content - adjust padding for mobile */
+    [data-testid="stSidebar"] .element-container {
+        padding: 0.75rem !important;
     }
     
     /* Stack all columns */
@@ -1088,5 +1113,185 @@ body, .stApp, .main {
 @media (max-width: 480px) {
     [data-testid="stHorizontalBlock"]:has([data-testid="stMetric"]) {
         grid-template-columns: 1fr !important;
+    }
+}
+
+/* ============================================
+   ENHANCED MOBILE RESPONSIVITY
+   ============================================ */
+
+/* Force sidebar to be collapsed on mobile by default */
+@media (max-width: 768px) {
+    /* Hide sidebar by default on mobile */
+    [data-testid="stSidebar"][aria-expanded="true"] {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    /* Show sidebar when toggled */
+    [data-testid="stSidebar"][aria-expanded="true"].mobile-open {
+        transform: translateX(0);
+    }
+    
+    /* Overlay when sidebar is open on mobile */
+    [data-testid="stSidebar"][aria-expanded="true"]::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        pointer-events: none;
+    }
+    
+    /* Ensure main content takes full width when sidebar is closed */
+    .main {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+    
+    /* Better touch targets for all interactive elements */
+    button, 
+    [role="button"],
+    a,
+    input[type="checkbox"],
+    input[type="radio"],
+    select {
+        min-height: 44px !important;
+        min-width: 44px !important;
+    }
+    
+    /* Improve text input fields on mobile */
+    input[type="text"],
+    input[type="password"],
+    textarea {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+        padding: 0.875rem !important;
+        min-height: 44px !important;
+    }
+    
+    /* Better spacing for form elements */
+    .stTextInput,
+    .stTextArea,
+    .stSelectbox {
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Improve file uploader on mobile */
+    [data-testid="stFileUploader"] {
+        padding: 1rem !important;
+        min-height: 120px !important;
+    }
+    
+    [data-testid="stFileUploader"] label {
+        font-size: 0.9rem !important;
+        padding: 0.75rem !important;
+    }
+    
+    /* Better button spacing */
+    .stButton {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    /* Improve code textarea on mobile */
+    textarea[placeholder*="code"],
+    textarea[placeholder*="Code"] {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+        padding: 1rem !important;
+    }
+    
+    /* Better divider spacing */
+    hr, .stDivider {
+        margin: 1.5rem 0 !important;
+    }
+    
+    /* Improve expander/collapsible sections */
+    .streamlit-expanderHeader {
+        padding: 1rem !important;
+        font-size: 0.95rem !important;
+    }
+    
+    /* Better alert/notification spacing */
+    .stAlert,
+    .stSuccess,
+    .stError,
+    .stWarning,
+    .stInfo {
+        padding: 1rem !important;
+        margin-bottom: 1rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    /* Improve selectbox dropdowns */
+    .stSelectbox > div > div {
+        padding: 0.75rem !important;
+        min-height: 44px !important;
+    }
+    
+    /* Better slider controls */
+    .stSlider {
+        padding: 1rem 0 !important;
+    }
+    
+    .stSlider > div {
+        margin: 0.5rem 0 !important;
+    }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 360px) {
+    .main .block-container {
+        padding: 0.75rem 1rem !important;
+    }
+    
+    [data-testid="stSidebar"] {
+        min-width: 240px !important;
+        max-width: 240px !important;
+    }
+    
+    /* Even smaller text on very small screens */
+    .main-header {
+        font-size: 1.5rem !important;
+    }
+    
+    .sub-header {
+        font-size: 0.85rem !important;
+    }
+}
+
+/* Landscape orientation on mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .main .block-container {
+        padding: 1rem 1.5rem !important;
+    }
+    
+    /* Reduce vertical spacing in landscape */
+    hr, .stDivider {
+        margin: 1rem 0 !important;
+    }
+    
+    /* Sidebar takes less space in landscape */
+    [data-testid="stSidebar"] {
+        max-width: 300px !important;
+    }
+}
+
+/* Improve sidebar toggle button visibility on mobile */
+@media (max-width: 768px) {
+    /* Make sidebar toggle more visible */
+    button[data-testid="baseButton-header"] {
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: var(--radius-md) !important;
+        box-shadow: var(--shadow-sm) !important;
+    }
+    
+    button[data-testid="baseButton-header"]:hover {
+        background: var(--bg-elevated) !important;
+        border-color: var(--accent-primary) !important;
+        box-shadow: var(--shadow-md) !important;
     }
 }

@@ -23,7 +23,7 @@ st.set_page_config(
     page_title="AI Pair Engineer",
     page_icon="🤖",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"  # Collapsed by default, especially on mobile
 )
 
 load_font_awesome()
@@ -39,7 +39,41 @@ def load_css() -> None:
         st.markdown("<style>/* Fallback */</style>", unsafe_allow_html=True)
 
 
+def load_mobile_scripts() -> None:
+    """Load mobile-specific scripts for better UX."""
+    st.markdown("""
+    <script>
+    // Ensure sidebar is collapsed on mobile by default
+    (function() {
+        function handleMobileSidebar() {
+            const isMobile = window.innerWidth <= 768;
+            const sidebar = document.querySelector('[data-testid="stSidebar"]');
+            
+            if (isMobile && sidebar) {
+                const isExpanded = sidebar.getAttribute('aria-expanded') === 'true';
+                // If sidebar is expanded on mobile, we can add overlay logic here
+                // The CSS will handle the visual collapse
+            }
+        }
+        
+        // Run on load and resize
+        handleMobileSidebar();
+        window.addEventListener('resize', handleMobileSidebar);
+        
+        // Prevent zoom on input focus (iOS)
+        const inputs = document.querySelectorAll('input[type="text"], input[type="password"], textarea, select');
+        inputs.forEach(input => {
+            if (input.style.fontSize === '' || parseFloat(input.style.fontSize) < 16) {
+                input.style.fontSize = '16px';
+            }
+        });
+    })();
+    </script>
+    """, unsafe_allow_html=True)
+
+
 load_css()
+load_mobile_scripts()
 
 MIN_CODE_LENGTH = 10
 MAX_CODE_LENGTH = 100000
@@ -607,10 +641,43 @@ def _render_api_key_input() -> str:
         height: 38px !important;
     }
     
+    /* Hide Streamlit's default password field eye icon - comprehensive selectors */
+    div[data-testid="stTextInput"] button[title*="password" i],
+    div[data-testid="stTextInput"] button[title*="Password" i],
+    div[data-testid="stTextInput"] button[aria-label*="password" i],
+    div[data-testid="stTextInput"] button[aria-label*="Password" i],
+    div[data-testid="stTextInput"] button[type="button"]:not([key]),
+    div[data-testid="stTextInput"] > div > div > button:not([key]),
+    div[data-testid="stTextInput"] svg[data-testid*="eye"],
+    div[data-testid="stTextInput"] svg[data-testid*="Eye"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Show only our custom toggle button */
+    button[key="toggle_api_key_visibility"] {
+        display: flex !important;
+    }
+    
     /* Ensure columns align properly */
     div[data-testid="column"]:has(button[key="toggle_api_key_visibility"]) {
         display: flex;
         align-items: flex-start;
+    }
+    
+    /* API key hint text styling */
+    .api-key-enter-hint {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -675,6 +742,13 @@ def _render_api_key_input() -> str:
                     label_visibility="collapsed",
                     key="api_key_input"
                 )
+                # Add hint below input field
+                st.markdown("""
+                <div class="api-key-enter-hint">
+                    <i class="fas fa-keyboard" style="font-size: 0.7rem;"></i>
+                    <span>Press Enter to apply</span>
+                </div>
+                """, unsafe_allow_html=True)
             
             with toggle_col:
                 # Toggle button aligned with input
@@ -685,6 +759,8 @@ def _render_api_key_input() -> str:
                     if api_key:
                         st.session_state["api_key"] = api_key
                     st.rerun()
+                # Add spacing to align with hint text
+                st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
         
         # Validation and status
         if api_key:
