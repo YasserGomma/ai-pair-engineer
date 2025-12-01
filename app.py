@@ -114,6 +114,57 @@ def load_mobile_scripts() -> None:
     """, unsafe_allow_html=True)
 
 
+def load_api_key_hover_script() -> None:
+    """Load script for API key hover reveal functionality."""
+    st.markdown("""
+    <script>
+    (function() {
+        function setupHoverReveal() {
+            const keyIcon = document.querySelector('#api-key-icon');
+            const apiKeyInput = document.querySelector('input[type="password"]') || 
+                               document.querySelector('input[placeholder*="sk-or"]');
+            
+            if (keyIcon && apiKeyInput && apiKeyInput.type === 'password') {
+                let isHovering = false;
+                
+                keyIcon.addEventListener('mouseenter', function() {
+                    isHovering = true;
+                    if (apiKeyInput.type === 'password') {
+                        apiKeyInput.type = 'text';
+                    }
+                });
+                
+                keyIcon.addEventListener('mouseleave', function() {
+                    isHovering = false;
+                    setTimeout(function() {
+                        if (!isHovering && apiKeyInput.type === 'text') {
+                            apiKeyInput.type = 'password';
+                        }
+                    }, 200);
+                });
+                
+                apiKeyInput.addEventListener('mouseenter', function() {
+                    if (keyIcon.matches(':hover') || document.querySelector('#api-key-icon:hover')) {
+                        if (apiKeyInput.type === 'password') {
+                            apiKeyInput.type = 'text';
+                        }
+                    }
+                });
+            }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupHoverReveal);
+        } else {
+            setupHoverReveal();
+        }
+        
+        setTimeout(setupHoverReveal, 500);
+    })();
+    </script>
+    """, unsafe_allow_html=True)
+
+
 load_css()
 load_mobile_scripts()
 
@@ -555,144 +606,102 @@ def render_header() -> None:
 def _render_api_key_input() -> str:
     st.markdown("""
     <style>
-    .api-key-container {
-        margin-bottom: 1.5rem;
-        background: var(--bg-card);
-        border: 1px solid var(--border-primary);
-        border-radius: var(--radius-lg);
-        padding: 1.25rem;
-        transition: all var(--transition-normal);
-    }
-
-    .api-key-container:hover {
-        border-color: var(--accent-primary);
-        box-shadow: var(--shadow-sm);
-    }
-
     .api-key-label {
         font-weight: 600;
         color: var(--text-primary);
-        font-size: 0.9rem;
-        margin-bottom: 0.75rem;
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
     }
 
-    .api-key-input-group {
-        position: relative;
-        display: flex;
-        align-items: stretch;
-        border-radius: var(--radius-md);
-        overflow: hidden;
-        box-shadow: var(--shadow-sm);
-        transition: all var(--transition-fast);
+    .api-key-label .fa-key {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        padding: 0.25rem;
+        border-radius: var(--radius-sm);
     }
 
-    .api-key-input-group:focus-within {
-        box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15), var(--shadow-md);
+    .api-key-label .fa-key:hover {
+        color: var(--accent-primary) !important;
+        background: rgba(88, 166, 255, 0.1);
+        transform: scale(1.1);
+    }
+
+    div[data-testid="stHorizontalBlock"]:has([key="api_key_input"]) {
+        width: 100% !important;
+        overflow: visible !important;
     }
 
     div[data-testid="stTextInput"] {
-        flex: 1;
-        margin: 0 !important;
+        flex: 1 !important;
+        min-width: 0 !important;
+        overflow: visible !important;
+        width: 100% !important;
     }
 
     div[data-testid="stTextInput"] > div {
-        height: 100% !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        overflow: visible !important;
+    }
+
+    div[data-testid="stTextInput"] > div > div {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        overflow: visible !important;
     }
 
     div[data-testid="stTextInput"] input[type="password"],
     div[data-testid="stTextInput"] input[type="text"],
     div[data-testid="stTextInput"] input:not([type]) {
         font-family: var(--font-mono) !important;
-        letter-spacing: 0.025em !important;
-        height: 48px !important;
-        padding: 0.875rem 1rem !important;
+        letter-spacing: 0.03em !important;
+        height: 42px !important;
+        padding: 0.75rem 1rem !important;
         background: var(--bg-card) !important;
         border: 1.5px solid var(--border-primary) !important;
-        border-radius: 0 !important;
-        border-right: none !important;
+        border-radius: var(--radius-md) !important;
         color: var(--text-primary) !important;
-        font-size: 0.9rem !important;
-        font-weight: 500 !important;
-        transition: all var(--transition-fast) !important;
-        outline: none !important;
+        font-size: 0.875rem !important;
+        transition: all 0.2s ease !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .api-key-label:hover ~ div input[type="password"],
+    .api-key-label:has(.fa-key:hover) ~ div input[type="password"] {
+        -webkit-text-security: none !important;
+        text-security: none !important;
     }
 
     div[data-testid="stTextInput"] input::placeholder {
         color: var(--text-muted) !important;
-        opacity: 0.7 !important;
-        font-weight: 400 !important;
+        opacity: 0.6 !important;
     }
 
     div[data-testid="stTextInput"] input:focus {
         border-color: var(--accent-primary) !important;
         background: var(--bg-elevated) !important;
-        box-shadow: none !important;
+        box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1) !important;
+        outline: none !important;
     }
 
     div[data-testid="stTextInput"] button:not([key]) {
         display: none !important;
     }
 
-    .api-key-input-wrapper {
-        display: flex;
-        width: 100%;
-    }
-
-    div[data-testid="stHorizontalBlock"] > div:first-child {
-        padding-right: 0 !important;
-        flex: 1 !important;
-    }
-
-    div[data-testid="stHorizontalBlock"] > div:last-child {
-        padding-left: 0 !important;
-        width: auto !important;
-    }
-
-    button[key="toggle_api_key_visibility"] {
-        background: var(--bg-card) !important;
-        border: 1.5px solid var(--border-primary) !important;
-        color: var(--text-secondary) !important;
-        width: 48px !important;
-        height: 48px !important;
-        min-width: 48px !important;
-        min-height: 48px !important;
-        padding: 0 !important;
-        border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
-        border-left: none !important;
-        margin-left: 0 !important;
-        transition: all var(--transition-fast) !important;
-        font-size: 1rem !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        cursor: pointer !important;
-        position: relative !important;
-        overflow: hidden !important;
-    }
-
-    button[key="toggle_api_key_visibility"]:hover {
-        background: var(--bg-elevated) !important;
-        border-color: var(--accent-primary) !important;
-        color: var(--accent-primary) !important;
-        transform: translateY(-1px) !important;
-        box-shadow: var(--shadow-sm) !important;
-    }
-
-    button[key="toggle_api_key_visibility"]:active {
-        transform: translateY(0) !important;
-        box-shadow: none !important;
-    }
 
     .api-key-feedback {
-        margin-top: 0.75rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.8rem;
-        font-weight: 500;
+        margin-top: 0.5rem;
+        font-size: 0.75rem;
     }
 
     .api-key-feedback.valid {
@@ -706,66 +715,16 @@ def _render_api_key_input() -> str:
     .api-key-help-link {
         color: var(--accent-primary);
         text-decoration: none;
-        font-size: 0.8rem;
-        font-weight: 500;
-        margin-top: 0.75rem;
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
         display: inline-flex;
         align-items: center;
-        gap: 0.375rem;
-        transition: all var(--transition-fast);
-        padding: 0.5rem 0.75rem;
-        border-radius: var(--radius-sm);
-        background: rgba(88, 166, 255, 0.05);
-        border: 1px solid rgba(88, 166, 255, 0.1);
+        gap: 0.25rem;
     }
 
     .api-key-help-link:hover {
         color: var(--accent-purple);
-        background: rgba(163, 113, 247, 0.1);
-        border-color: rgba(163, 113, 247, 0.2);
-        text-decoration: none;
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .api-key-help-link i {
-        font-size: 0.75rem;
-    }
-
-    /* Mobile responsiveness */
-    @media (max-width: 768px) {
-        .api-key-container {
-            padding: 1rem;
-            margin-bottom: 1.25rem;
-        }
-
-        .api-key-input-group {
-            flex-direction: column;
-            border-radius: var(--radius-md);
-        }
-
-        div[data-testid="stTextInput"] input[type="password"],
-        div[data-testid="stTextInput"] input[type="text"],
-        div[data-testid="stTextInput"] input:not([type]) {
-            border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
-            border-right: 1.5px solid var(--border-primary) !important;
-            border-bottom: none !important;
-        }
-
-        button[key="toggle_api_key_visibility"] {
-            border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
-            border-left: 1.5px solid var(--border-primary) !important;
-            border-top: none !important;
-            width: 100% !important;
-            height: 44px !important;
-            min-height: 44px !important;
-            justify-content: center !important;
-            font-size: 0.9rem !important;
-        }
-
-        div[data-testid="stHorizontalBlock"] > div:last-child {
-            width: 100% !important;
-        }
+        text-decoration: underline;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -785,102 +744,35 @@ def _render_api_key_input() -> str:
     if not api_key and os.getenv("OPENROUTER_API_KEY"):
         api_key = os.getenv("OPENROUTER_API_KEY")
         api_key_source = "environment"
-    
-    st.markdown("""
-    <div class="api-key-container">
-        <div class="api-key-label">
-            <i class="fas fa-key" style="color: var(--accent-primary);"></i>
-            <span>OpenRouter API Key</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+        
     
     if api_key_source:
-        st.info(f"✓ Using API key from {api_key_source}")
+        st.success(f"Using API key from {api_key_source}")
     else:
         current_key = st.session_state.get("api_key", "")
-        if "api_key_visible" not in st.session_state:
-            st.session_state.api_key_visible = False
         
-        st.markdown('<div class="api-key-input-wrapper">', unsafe_allow_html=True)
-
-        input_col, toggle_col = st.columns([1, 0.12], gap="small")
-
-        with input_col:
-            api_key = st.text_input(
-                "OpenRouter API Key",
-                type="password" if not st.session_state.api_key_visible else "default",
-                value=current_key,
-                placeholder="sk-or-v1-...",
-                help="",
-                label_visibility="collapsed",
-                key="api_key_input"
-            )
-
-        with toggle_col:
-            # Create toggle button with Font Awesome icon
-            icon_html = icon("eye-slash", "1rem") if st.session_state.api_key_visible else icon("eye", "1rem")
-            st.markdown(f"""
-            <div style="display: flex; align-items: center; justify-content: center; height: 48px;">
-                <div onclick="
-                    const button = document.querySelector('button[key=toggle_api_key_visibility]');
-                    if (button) button.click();
-                " style="
-                    background: var(--bg-card);
-                    border: 1.5px solid var(--border-primary);
-                    color: var(--text-secondary);
-                    width: 48px;
-                    height: 48px;
-                    border-radius: 0 var(--radius-md) var(--radius-md) 0;
-                    border-left: none;
-                    margin-left: 0;
-                    transition: all 0.2s ease;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    cursor: pointer;
-                    font-size: 1rem;
-                " onmouseover="
-                    this.style.background='var(--bg-elevated)';
-                    this.style.borderColor='var(--accent-primary)';
-                    this.style.color='var(--accent-primary)';
-                    this.style.transform='translateY(-1px)';
-                    this.style.boxShadow='var(--shadow-sm)';
-                " onmouseout="
-                    this.style.background='var(--bg-card)';
-                    this.style.borderColor='var(--border-primary)';
-                    this.style.color='var(--text-secondary)';
-                    this.style.transform='translateY(0)';
-                    this.style.boxShadow='none';
-                ">
-                    {icon_html}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-            # Hidden Streamlit button for state management
-            if st.button("", key="toggle_api_key_visibility", help="Toggle visibility"):
-                st.session_state.api_key_visible = not st.session_state.api_key_visible
-                if api_key:
-                    st.session_state["api_key"] = api_key
-                st.rerun()
-
-        st.markdown('</div>', unsafe_allow_html=True)
+        api_key = st.text_input(
+            "OpenRouter API Key",
+            type="password",
+            value=current_key,
+            placeholder="sk-or-v1-...",
+            help="Hover over the key icon above to reveal your API key",
+            label_visibility="collapsed",
+            key="api_key_input"
+        )
         
         if api_key:
             is_valid, error_msg = validate_api_key(api_key)
             if is_valid:
                 st.markdown(f"""
                 <div class="api-key-feedback valid">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Valid API key</span>
+                    <i class="fas fa-check-circle"></i> Valid API key
                 </div>
                 """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
                 <div class="api-key-feedback invalid">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span>{error_msg}</span>
+                    <i class="fas fa-exclamation-circle"></i> {error_msg}
                 </div>
                 """, unsafe_allow_html=True)
         
@@ -890,6 +782,8 @@ def _render_api_key_input() -> str:
             Get your API key
         </a>
         """, unsafe_allow_html=True)
+        
+        load_api_key_hover_script()
         
         if api_key != current_key:
             st.session_state["api_key"] = api_key
@@ -986,14 +880,87 @@ def render_code_input() -> Tuple[str, Optional[str]]:
         storage.save_code_input(code_input)
     if code_input:
         st.caption(f"**{len(code_input.split(chr(10)))}** lines | **{len(code_input):,}** characters")
-    col1, col2 = st.columns(2)
+    
+    st.markdown("""
+    <style>
+    button[key="load_example"],
+    button[key="clear_code"] {
+        min-height: 44px !important;
+        font-weight: 600 !important;
+        font-size: 0.9rem !important;
+        white-space: nowrap !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.5rem !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    button[key="load_example"] p,
+    button[key="clear_code"] p {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    button[key="load_example"]:hover,
+    button[key="clear_code"]:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: var(--shadow-md) !important;
+    }
+    </style>
+    <script>
+    (function() {
+        function addButtonIcons() {
+            const loadBtn = document.querySelector('button[key="load_example"]');
+            const clearBtn = document.querySelector('button[key="clear_code"]');
+            
+            if (loadBtn && !loadBtn.querySelector('i.fa-file-code')) {
+                const loadIcon = document.createElement('i');
+                loadIcon.className = 'fas fa-file-code';
+                loadIcon.style.marginRight = '0.5rem';
+                const loadText = loadBtn.querySelector('p');
+                if (loadText && loadText.firstChild) {
+                    loadText.insertBefore(loadIcon, loadText.firstChild);
+                }
+            }
+            
+            if (clearBtn && !clearBtn.querySelector('i.fa-trash')) {
+                const clearIcon = document.createElement('i');
+                clearIcon.className = 'fas fa-trash';
+                clearIcon.style.marginRight = '0.5rem';
+                const clearText = clearBtn.querySelector('p');
+                if (clearText && clearText.firstChild) {
+                    clearText.insertBefore(clearIcon, clearText.firstChild);
+                }
+            }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', addButtonIcons);
+        } else {
+            addButtonIcons();
+        }
+        
+        setTimeout(addButtonIcons, 500);
+        
+        const observer = new MutationObserver(addButtonIcons);
+        observer.observe(document.body, { childList: true, subtree: true });
+    })();
+    </script>
+    """, unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2, gap="medium")
     with col1:
-        if st.button("Load Example Code", use_container_width=True):
+        if st.button("Load Example Code", use_container_width=True, key="load_example"):
             st.session_state["code_input"] = EXAMPLE_CODE
             storage.save_code_input(EXAMPLE_CODE)
             st.rerun()
     with col2:
-        if st.button("Clear Code", use_container_width=True):
+        if st.button("Clear Code", use_container_width=True, key="clear_code"):
             st.session_state["code_input"] = ""
             storage.save_code_input("")
             st.rerun()

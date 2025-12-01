@@ -906,9 +906,9 @@ hr {
 
 /* Fix sidebar width to prevent layout disturbance */
 [data-testid="stSidebar"] {
-    min-width: 300px !important;
-    max-width: 300px !important;
-    width: 300px !important;
+    min-width: 340px !important;
+    max-width: 340px !important;
+    width: 340px !important;
     flex-shrink: 0 !important;
 }
 
