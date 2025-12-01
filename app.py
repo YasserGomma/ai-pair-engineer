@@ -23,7 +23,7 @@ st.set_page_config(
     page_title="AI Pair Engineer",
     page_icon="🤖",
     layout="wide",
-    initial_sidebar_state="collapsed"  # Collapsed by default, especially on mobile
+    initial_sidebar_state="collapsed"
 )
 
 load_font_awesome()
@@ -43,7 +43,6 @@ def load_mobile_scripts() -> None:
     """Load mobile-specific scripts for better UX."""
     st.markdown("""
     <script>
-    // Mobile Sidebar Drawer Functionality
     (function() {
         function setupMobileSidebar() {
             const isMobile = window.innerWidth <= 768;
@@ -51,7 +50,6 @@ def load_mobile_scripts() -> None:
             const toggleButton = document.querySelector('button[data-testid="baseButton-header"]');
             
             if (isMobile && sidebar) {
-                // Create overlay element if it doesn't exist
                 let overlay = document.querySelector('.sidebar-overlay');
                 if (!overlay) {
                     overlay = document.createElement('div');
@@ -59,7 +57,6 @@ def load_mobile_scripts() -> None:
                     document.body.appendChild(overlay);
                 }
                 
-                // Ensure sidebar toggle button is visible and clickable
                 if (toggleButton) {
                     toggleButton.style.display = 'flex';
                     toggleButton.style.zIndex = '1000';
@@ -68,7 +65,6 @@ def load_mobile_scripts() -> None:
                     toggleButton.style.left = '1rem';
                 }
                 
-                // Function to update overlay visibility
                 function updateOverlay() {
                     const isExpanded = sidebar.getAttribute('aria-expanded') === 'true';
                     if (isExpanded) {
@@ -80,14 +76,12 @@ def load_mobile_scripts() -> None:
                     }
                 }
                 
-                // Close sidebar when clicking overlay
                 overlay.addEventListener('click', () => {
                     if (toggleButton && sidebar.getAttribute('aria-expanded') === 'true') {
                         toggleButton.click();
                     }
                 });
                 
-                // Prevent body scroll when sidebar is open
                 const observer = new MutationObserver(() => {
                     updateOverlay();
                 });
@@ -97,22 +91,18 @@ def load_mobile_scripts() -> None:
                     attributeFilter: ['aria-expanded']
                 });
                 
-                // Initial update
                 updateOverlay();
             }
         }
         
-        // Run on load
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', setupMobileSidebar);
         } else {
             setupMobileSidebar();
         }
         
-        // Run on resize
         window.addEventListener('resize', setupMobileSidebar);
         
-        // Prevent zoom on input focus (iOS)
         const inputs = document.querySelectorAll('input[type="text"], input[type="password"], textarea, select');
         inputs.forEach(input => {
             if (input.style.fontSize === '' || parseFloat(input.style.fontSize) < 16) {
@@ -563,7 +553,6 @@ def render_header() -> None:
 
 
 def _render_api_key_input() -> str:
-    # Clean, Modern API Key Input Styling
     st.markdown("""
     <style>
     /* Clean API Key Section */
@@ -743,7 +732,6 @@ def _render_api_key_input() -> str:
         api_key = os.getenv("OPENROUTER_API_KEY")
         api_key_source = "environment"
     
-    # Clean Header
     st.markdown("""
     <div class="api-key-section">
         <div class="api-key-label-row">
@@ -766,18 +754,13 @@ def _render_api_key_input() -> str:
         </div>
         """, unsafe_allow_html=True)
     else:
-        # Manual input with clean design
         current_key = st.session_state.get("api_key", "")
-        
-        # Toggle visibility state
         if "api_key_visible" not in st.session_state:
             st.session_state.api_key_visible = False
         
-        # Input row with toggle button
         input_col, toggle_col = st.columns([6, 1], gap="small")
         
         with input_col:
-            # Input field - clean, no placeholder text inside
             api_key = st.text_input(
                 "OpenRouter API Key",
                 type="password" if not st.session_state.api_key_visible else "default",
@@ -789,7 +772,6 @@ def _render_api_key_input() -> str:
             )
         
         with toggle_col:
-            # Clean toggle button
             toggle_text = "🙈" if st.session_state.api_key_visible else "👁️"
             if st.button(toggle_text, key="toggle_api_key_visibility", help="Toggle visibility"):
                 st.session_state.api_key_visible = not st.session_state.api_key_visible
@@ -797,8 +779,7 @@ def _render_api_key_input() -> str:
                     st.session_state["api_key"] = api_key
                 st.rerun()
         
-        # Hint text below input (only show if no key entered)
-        if not api_key:
+    if not api_key:
             st.markdown("""
             <div class="api-key-hint">
                 <i class="fas fa-keyboard" style="font-size: 0.7rem;"></i>
@@ -806,7 +787,6 @@ def _render_api_key_input() -> str:
             </div>
             """, unsafe_allow_html=True)
         
-        # Validation status
         if api_key:
             is_valid, error_msg = validate_api_key(api_key)
             if is_valid:
@@ -824,7 +804,6 @@ def _render_api_key_input() -> str:
                 </div>
                 """, unsafe_allow_html=True)
         
-        # Help link
         st.markdown("""
         <div>
             <a href="https://openrouter.ai/keys" target="_blank" class="api-key-link">
@@ -834,7 +813,6 @@ def _render_api_key_input() -> str:
         </div>
         """, unsafe_allow_html=True)
         
-        # Save to session state
         if api_key != current_key:
             st.session_state["api_key"] = api_key
     
@@ -1045,7 +1023,6 @@ def _render_mode_result(mode: ReviewMode) -> None:
     result = SessionStateManager.get_result(mode.name)
     if result:
         st.markdown("---")
-        # Enhanced result container
         st.markdown("""
         <div style="background: var(--bg-card); border: 1px solid var(--border-primary); 
                     border-radius: var(--radius-lg); padding: 1.5rem; margin: 1rem 0;">
@@ -1090,7 +1067,6 @@ def _resolve_language(language: str, detected_language: Optional[str]) -> str:
 
 
 def render_review_tabs(code_input: str, api_key: str, language: str, context: str, model: str, max_tokens: int, temperature: float, detected_language: Optional[str]) -> None:
-    # Enhanced Review Mode Header
     st.markdown("""
     <div style="margin-bottom: 1.5rem;">
         <h2 style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; color: var(--text-primary);">
@@ -1128,7 +1104,6 @@ def render_review_tabs(code_input: str, api_key: str, language: str, context: st
     default_idx = mode_names.index(saved_mode) if saved_mode in mode_names else 4
     selected_mode = modes[default_idx]
 
-    # Enhanced Review Mode Card Styling
     st.markdown("""<style>
     .review-mode-card {
         background: var(--bg-card);
@@ -1173,7 +1148,6 @@ def render_review_tabs(code_input: str, api_key: str, language: str, context: st
     }
     </style>""", unsafe_allow_html=True)
 
-    # Add enhanced styling for mode selector dropdown
     st.markdown("""
     <style>
     /* Enhanced mode dropdown styling */
@@ -1220,7 +1194,6 @@ def render_review_tabs(code_input: str, api_key: str, language: str, context: st
     mode_to_option = {v: k for k, v in mode_options.items()}
     default_option = mode_to_option.get(selected_mode, list(mode_options.keys())[4])
 
-    # Render dropdown
     st.markdown('<div class="mode-select-container">', unsafe_allow_html=True)
     selected_option = st.selectbox(
         "Select Review Mode",
@@ -1233,12 +1206,10 @@ def render_review_tabs(code_input: str, api_key: str, language: str, context: st
 
     selected_mode = mode_options[selected_option]
 
-    # Update session state if mode changed
     if selected_mode.name != st.session_state.get("analysis_mode", "FULL_REVIEW"):
         st.session_state.analysis_mode = selected_mode.name
         storage.save_analysis_mode(selected_mode.name)
 
-    # Render selected mode description card
     st.markdown(f"""
     <div class="review-mode-card">
         <div class="mode-header">
