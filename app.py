@@ -779,7 +779,7 @@ def _render_api_key_input() -> str:
                     st.session_state["api_key"] = api_key
                 st.rerun()
         
-    if not api_key:
+        if not api_key:
             st.markdown("""
             <div class="api-key-hint">
                 <i class="fas fa-keyboard" style="font-size: 0.7rem;"></i>
