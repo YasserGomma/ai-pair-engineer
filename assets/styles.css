@@ -1,0 +1,514 @@
+/* AI Pair Engineer - Pro Hacker Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bg-primary: #0a0e14;
+    --bg-secondary: #0d1117;
+    --bg-tertiary: #161b22;
+    --bg-card: #1c2128;
+    --bg-elevated: #21262d;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-muted: #6e7681;
+    --accent-primary: #58a6ff;
+    --accent-secondary: #7ee787;
+    --accent-warning: #d29922;
+    --accent-error: #f85149;
+    --accent-purple: #a371f7;
+    --accent-cyan: #39c5cf;
+    --border-primary: #30363d;
+    --border-secondary: #21262d;
+    --gradient-primary: linear-gradient(135deg, #58a6ff 0%, #a371f7 50%, #f778ba 100%);
+    --gradient-secondary: linear-gradient(135deg, #7ee787 0%, #58a6ff 100%);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 20px rgba(88, 166, 255, 0.15);
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+}
+
+* {
+    font-family: var(--font-sans);
+}
+
+code, pre, .stCodeBlock, textarea {
+    font-family: var(--font-mono) !important;
+}
+
+.main {
+    background-color: var(--bg-primary) !important;
+}
+
+.stApp {
+    background: var(--bg-primary);
+    background-image:
+        radial-gradient(ellipse at top, rgba(88, 166, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom right, rgba(163, 113, 247, 0.03) 0%, transparent 50%);
+}
+
+[data-testid="stSidebar"] {
+    background-color: var(--bg-secondary) !important;
+    border-right: 1px solid var(--border-primary);
+}
+
+[data-testid="stSidebar"] > div {
+    background-color: transparent !important;
+}
+
+.main .block-container {
+    padding: 2rem 3rem;
+    max-width: 1400px;
+}
+
+.main-header {
+    font-family: var(--font-sans);
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+}
+
+.sub-header {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-top: 0;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+}
+
+.stTabs [data-baseweb="tab-list"] {
+    gap: 4px;
+    background-color: var(--bg-tertiary);
+    padding: 6px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-primary);
+}
+
+.stTabs [data-baseweb="tab"] {
+    padding: 10px 18px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all var(--transition-fast);
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+}
+
+.stTabs [data-baseweb="tab"]:hover {
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+    border-color: var(--border-primary);
+}
+
+.stTabs [aria-selected="true"] {
+    background: var(--gradient-primary) !important;
+    color: white !important;
+    box-shadow: var(--shadow-md), var(--shadow-glow);
+    border-color: transparent !important;
+}
+
+.stButton > button {
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.6rem 1.2rem;
+    transition: all var(--transition-fast);
+    border: 1px solid var(--border-primary);
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.stButton > button:hover {
+    background-color: var(--bg-card);
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.stButton > button[kind="primary"],
+.stButton > button[data-testid="baseButton-primary"] {
+    background: var(--gradient-primary);
+    border: none;
+    color: white;
+    font-weight: 700;
+}
+
+.stButton > button[kind="primary"]:hover,
+.stButton > button[data-testid="baseButton-primary"]:hover {
+    box-shadow: var(--shadow-md), var(--shadow-glow);
+    transform: translateY(-2px);
+}
+
+[data-testid="stMetric"] {
+    background: var(--bg-card);
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-primary);
+    transition: all var(--transition-fast);
+}
+
+[data-testid="stMetric"]:hover {
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+[data-testid="stMetricValue"] {
+    font-family: var(--font-mono) !important;
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+
+[data-testid="stMetricLabel"] {
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.stSelectbox > div > div,
+.stMultiSelect > div > div {
+    background-color: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-primary);
+}
+
+.stSelectbox > div > div:hover,
+.stMultiSelect > div > div:hover {
+    border-color: var(--accent-primary);
+}
+
+.stTextInput > div > div > input,
+.stTextArea > div > div > textarea {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono);
+    padding: 0.75rem;
+}
+
+.stTextInput > div > div > input:focus,
+.stTextArea > div > div > textarea:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+}
+
+.stTextArea > div > div > textarea {
+    min-height: 300px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+[data-testid="stFileUploader"] {
+    background: var(--bg-card);
+    border: 2px dashed var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    transition: all var(--transition-normal);
+}
+
+[data-testid="stFileUploader"]:hover {
+    border-color: var(--accent-primary);
+    background: var(--bg-elevated);
+}
+
+[data-testid="stFileUploader"] label {
+    color: var(--text-secondary);
+}
+
+.stAlert, .stInfo {
+    background-color: rgba(88, 166, 255, 0.08) !important;
+    border: 1px solid rgba(88, 166, 255, 0.2) !important;
+    border-left: 4px solid var(--accent-primary) !important;
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+}
+
+.stSuccess {
+    background-color: rgba(126, 231, 135, 0.08) !important;
+    border: 1px solid rgba(126, 231, 135, 0.2) !important;
+    border-left: 4px solid var(--accent-secondary) !important;
+    border-radius: var(--radius-md);
+}
+
+.stError {
+    background-color: rgba(248, 81, 73, 0.08) !important;
+    border: 1px solid rgba(248, 81, 73, 0.2) !important;
+    border-left: 4px solid var(--accent-error) !important;
+    border-radius: var(--radius-md);
+}
+
+.stWarning {
+    background-color: rgba(210, 153, 34, 0.08) !important;
+    border: 1px solid rgba(210, 153, 34, 0.2) !important;
+    border-left: 4px solid var(--accent-warning) !important;
+    border-radius: var(--radius-md);
+}
+
+.streamlit-expanderHeader {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-primary);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.streamlit-expanderHeader:hover {
+    border-color: var(--accent-primary);
+    background: var(--bg-elevated);
+}
+
+.streamlit-expanderContent {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    padding: 1rem;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--border-primary);
+    margin: 1.5rem 0;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-primary);
+    border-radius: 5px;
+    border: 2px solid var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-primary);
+}
+
+.stSlider > div > div > div {
+    background-color: var(--border-primary);
+}
+
+.stSlider > div > div > div > div {
+    background-color: var(--accent-primary);
+}
+
+.stSlider [data-testid="stTickBarMin"],
+.stSlider [data-testid="stTickBarMax"] {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+}
+
+.stDownloadButton > button {
+    background: var(--gradient-secondary);
+    border: none;
+    color: var(--bg-primary);
+    font-weight: 700;
+}
+
+.stDownloadButton > button:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.stCodeBlock {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-primary);
+}
+
+.stCodeBlock pre {
+    background-color: var(--bg-tertiary) !important;
+    padding: 1rem !important;
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+}
+
+.stCodeBlock code {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+}
+
+/* Markdown code blocks in results */
+.stMarkdown pre {
+    background-color: var(--bg-tertiary) !important;
+    padding: 1rem !important;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-primary);
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    overflow-x: auto;
+}
+
+.stMarkdown pre code {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    background: transparent !important;
+    padding: 0 !important;
+    color: var(--text-primary) !important;
+}
+
+.stMarkdown a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+}
+
+.stMarkdown a:hover {
+    color: var(--accent-purple);
+    text-decoration: underline;
+}
+
+.stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+    color: var(--text-primary);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.stMarkdown code {
+    background-color: var(--bg-elevated);
+    padding: 0.25em 0.5em;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent-cyan);
+}
+
+.stSpinner > div {
+    border-color: var(--accent-primary) transparent transparent transparent;
+}
+
+.cost-tracker {
+    background: var(--gradient-primary);
+    padding: 1.25rem;
+    border-radius: var(--radius-lg);
+    color: white;
+    margin: 1rem 0;
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.history-item {
+    background: var(--bg-card);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin: 0.5rem 0;
+    border-left: 3px solid var(--accent-primary);
+    border: 1px solid var(--border-primary);
+    transition: all var(--transition-fast);
+}
+
+.history-item:hover {
+    transform: translateX(4px);
+    border-left-color: var(--accent-purple);
+    box-shadow: var(--shadow-sm);
+}
+
+.code-input-container {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    border: 1px solid var(--border-primary);
+    transition: all var(--transition-normal);
+}
+
+.code-input-container:focus-within {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+}
+
+.terminal-text {
+    font-family: var(--font-mono);
+    color: var(--accent-secondary);
+}
+
+.glow-text {
+    text-shadow: 0 0 10px currentColor;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { box-shadow: var(--shadow-md); }
+    50% { box-shadow: var(--shadow-md), var(--shadow-glow); }
+}
+
+.pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+    .main-header {
+        font-size: 1.75rem;
+    }
+    .sub-header {
+        font-size: 0.95rem;
+    }
+    .stTabs [data-baseweb="tab"] {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+    .main .block-container {
+        padding: 1rem;
+    }
+    [data-testid="stMetric"] {
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-header {
+        font-size: 1.5rem;
+    }
+    .stTabs [data-baseweb="tab"] {
+        padding: 6px 8px;
+        font-size: 0.7rem;
+    }
+}
+
+/* Button Icons using Font Awesome */
+
+/* Primary Analyze buttons - play icon */
+.stButton > button[data-testid="baseButton-primary"]::before {
+    font-family: "Font Awesome 6 Free";
+    content: "\f04b";
+    font-weight: 900;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+/* Download Report - download icon */
+.stDownloadButton > button::before {
+    font-family: "Font Awesome 6 Free";
+    content: "\f019";
+    font-weight: 900;
+    margin-right: 8px;
+    display: inline-block;
+}
+
+/* Secondary buttons styling */
+.stButton > button[data-testid="baseButton-secondary"]::before {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    margin-right: 8px;
+    display: inline-block;
+}

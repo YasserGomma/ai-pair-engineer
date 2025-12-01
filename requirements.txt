@@ -1,0 +1,10 @@
+streamlit>=1.28.0
+openai>=1.0.0
+python-dotenv>=1.0.0
+
+# Note: pyarrow is an optional dependency of pandas/streamlit
+# If installation fails, you can skip it as it's not required for this app
+# To install Arrow C++ library (required for pyarrow source builds):
+#   macOS: brew install apache-arrow
+#   Linux: sudo apt-get install libarrow-dev (or equivalent)
+#   Or use: pip install --only-binary :all: pyarrow
