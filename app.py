@@ -615,6 +615,14 @@ def _render_api_key_input() -> str:
         display: flex;
     }
     
+    div[data-testid="stHorizontalBlock"] > div:first-child {
+        padding-right: 0 !important;
+    }
+    
+    div[data-testid="stHorizontalBlock"] > div:last-child {
+        padding-left: 0 !important;
+    }
+    
     button[key="toggle_api_key_visibility"] {
         background: var(--bg-card) !important;
         border: 1.5px solid var(--border-primary) !important;
@@ -626,6 +634,7 @@ def _render_api_key_input() -> str:
         padding: 0 !important;
         border-radius: 0 var(--radius-md) var(--radius-md) 0 !important;
         border-left: none !important;
+        margin-left: -1px !important;
         transition: all 0.2s ease !important;
         font-size: 1.1rem !important;
         display: flex !important;
@@ -718,7 +727,7 @@ def _render_api_key_input() -> str:
         
         st.markdown('<div class="api-key-input-wrapper">', unsafe_allow_html=True)
         
-        input_col, toggle_col = st.columns([1, 0.12], gap="none")
+        input_col, toggle_col = st.columns([1, 0.12], gap="small")
         
         with input_col:
             api_key = st.text_input(
