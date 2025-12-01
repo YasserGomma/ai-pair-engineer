@@ -826,83 +826,89 @@ def render_review_tabs(code_input: str, api_key: str, language: str, context: st
     }
     </style>""", unsafe_allow_html=True)
 
-    # Add custom styling for mode buttons
+    # Add enhanced styling for mode selector buttons
     st.markdown("""
     <style>
-    /* Style mode selector buttons */
+    /* Enhanced mode button styling */
     button[key*="mode_"] {
-        min-height: 100px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 0.5rem !important;
-        padding: 1rem 0.5rem !important;
+        min-height: 105px !important;
+        border-radius: var(--radius-lg) !important;
+        border: 2px solid var(--border-primary) !important;
+        background: var(--bg-card) !important;
+        transition: all 0.25s ease !important;
+        font-weight: 600 !important;
         font-size: 0.9rem !important;
-        line-height: 1.4 !important;
+        box-shadow: var(--shadow-sm) !important;
+        padding: 1rem 0.5rem !important;
     }
     
+    button[key*="mode_"]:hover {
+        border-color: var(--accent-primary) !important;
+        background: var(--bg-elevated) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: var(--shadow-md) !important;
+    }
+    
+    /* Active/selected primary buttons */
+    button[key*="mode_"][data-baseButton-kind="primary"] {
+        background: linear-gradient(135deg, rgba(88, 166, 255, 0.2) 0%, rgba(88, 166, 255, 0.1) 100%) !important;
+        border-color: var(--accent-primary) !important;
+        color: var(--accent-primary) !important;
+        box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15), var(--shadow-md) !important;
+    }
+    
+    button[key*="mode_"][data-baseButton-kind="primary"]:hover {
+        background: linear-gradient(135deg, rgba(88, 166, 255, 0.25) 0%, rgba(88, 166, 255, 0.15) 100%) !important;
+    }
+    
+    /* Full review button - different styling */
     button[key*="mode_full"] {
-        min-height: 60px !important;
-        flex-direction: row !important;
-        justify-content: center !important;
-        gap: 0.75rem !important;
-        padding: 0.875rem 1.5rem !important;
+        min-height: 65px !important;
+        margin-top: 0.75rem !important;
         font-size: 1rem !important;
+        padding: 0.875rem 1.5rem !important;
     }
     
     @media (max-width: 768px) {
         button[key*="mode_"] {
-            min-height: 90px !important;
+            min-height: 95px !important;
             font-size: 0.85rem !important;
-            padding: 0.875rem 0.375rem !important;
+            padding: 0.875rem 0.5rem !important;
         }
         
         button[key*="mode_full"] {
-            min-height: 55px !important;
+            min-height: 60px !important;
             font-size: 0.9rem !important;
         }
     }
     </style>
     """, unsafe_allow_html=True)
     
-    # Render mode selector using buttons in a grid
-    # First row: 4 mode buttons
+    # Render mode selector using Streamlit buttons with emoji icons
     col1, col2, col3, col4 = st.columns(4, gap="small")
     
     with col1:
-        icon_name, icon_color = mode_icons[ReviewMode.DESIGN_FLAWS]
-        button_label = f'{icon(Icons.SEARCH, "1.5em", icon_color)}<br>{mode_short_names[ReviewMode.DESIGN_FLAWS]}'
-        if st.button(button_label, key="mode_design", use_container_width=True, 
+        if st.button("🔍 Design Flaws", key="mode_design", use_container_width=True, 
                     type="primary" if selected_mode == ReviewMode.DESIGN_FLAWS else "secondary"):
             selected_mode = ReviewMode.DESIGN_FLAWS
     
     with col2:
-        icon_name, icon_color = mode_icons[ReviewMode.TEST_GENERATION]
-        button_label = f'{icon(Icons.FLASK, "1.5em", icon_color)}<br>{mode_short_names[ReviewMode.TEST_GENERATION]}'
-        if st.button(button_label, key="mode_tests", use_container_width=True,
+        if st.button("🧪 Generate Tests", key="mode_tests", use_container_width=True,
                     type="primary" if selected_mode == ReviewMode.TEST_GENERATION else "secondary"):
             selected_mode = ReviewMode.TEST_GENERATION
     
     with col3:
-        icon_name, icon_color = mode_icons[ReviewMode.REFACTORING]
-        button_label = f'{icon(Icons.REFACTOR, "1.5em", icon_color)}<br>{mode_short_names[ReviewMode.REFACTORING]}'
-        if st.button(button_label, key="mode_refactor", use_container_width=True,
+        if st.button("♻️ Refactoring", key="mode_refactor", use_container_width=True,
                     type="primary" if selected_mode == ReviewMode.REFACTORING else "secondary"):
             selected_mode = ReviewMode.REFACTORING
     
     with col4:
-        icon_name, icon_color = mode_icons[ReviewMode.SECURITY_REVIEW]
-        button_label = f'{icon(Icons.SECURITY, "1.5em", icon_color)}<br>{mode_short_names[ReviewMode.SECURITY_REVIEW]}'
-        if st.button(button_label, key="mode_security", use_container_width=True,
+        if st.button("🔒 Security Audit", key="mode_security", use_container_width=True,
                     type="primary" if selected_mode == ReviewMode.SECURITY_REVIEW else "secondary"):
             selected_mode = ReviewMode.SECURITY_REVIEW
     
-    # Second row: Full Review button (full width)
     st.markdown("<br>", unsafe_allow_html=True)
-    icon_name, icon_color = mode_icons[ReviewMode.FULL_REVIEW]
-    button_label = f'{icon(Icons.ROBOT, "1.25em", icon_color)} {mode_short_names[ReviewMode.FULL_REVIEW]}'
-    if st.button(button_label, key="mode_full", use_container_width=True,
+    if st.button("🤖 Full Review", key="mode_full", use_container_width=True,
                 type="primary" if selected_mode == ReviewMode.FULL_REVIEW else "secondary"):
         selected_mode = ReviewMode.FULL_REVIEW
     
@@ -912,7 +918,7 @@ def render_review_tabs(code_input: str, api_key: str, language: str, context: st
         storage.save_analysis_mode(selected_mode.name)
         st.rerun()
 
-    # Render selected mode content
+    # Render selected mode description card
     st.markdown(f"""
     <div class="review-mode-card">
         <div class="mode-header">
