@@ -25,9 +25,10 @@ Your AI-powered code review partner. Analyze files or entire projects with multi
 | **Project Analysis** | Upload ZIP archives or multiple files for full codebase review |
 | **File Upload** | Direct file upload with auto language detection |
 | **Cost Tracking** | Real-time token usage and cost estimates before analysis |
-| **Persistent Storage** | Code, results, history & settings survive page refreshes |
+| **Session Storage** | Code, results, history & settings stored per browser session (device-specific) |
 | **Session History** | Review and compare past analyses (up to 50) |
 | **Dark Theme** | Pro hacker theme with Font Awesome icons |
+| **Mobile Responsive** | Fully responsive design with mobile drawer sidebar |
 
 ## Quick Start
 
@@ -44,8 +45,10 @@ streamlit run app.py
 ## Usage
 
 1. **Enter your OpenRouter API key** in the sidebar (get one at [openrouter.ai/keys](https://openrouter.ai/keys))
+   - Hover over the key icon to reveal your API key
    - Or set it in `.streamlit/secrets.toml` for local development
    - Or add it to Streamlit Cloud secrets for deployment
+   - Or set it as an environment variable `OPENROUTER_API_KEY`
 2. **Upload a file** or **paste your code** directly
 3. **Select language** or use **auto-detect** for uploaded files
 4. **Choose your AI model** from OpenAI, Anthropic, Google, Meta, and more
@@ -190,8 +193,9 @@ The app tracks API usage in real-time via OpenRouter with **pre-analysis cost es
 - **Response Time**: ~5 seconds per analysis
 - **Input Validation**: Code length limits (10-100,000 characters), file size limits (500KB)
 - **Error Handling**: Comprehensive error messages for API issues
-- **Security**: API key validation (supports secrets, env vars, manual input)
-- **Persistent Storage**: JSON-based storage in `.data/` directory (history, results, settings)
+- **Security**: API key validation (supports secrets, env vars, manual input with hover-to-reveal)
+- **Session Storage**: All data stored in browser session state (device-specific, no cross-device sharing)
+- **Mobile Support**: Responsive design with collapsible sidebar drawer on mobile devices
 - **Dependencies**: streamlit, openai, python-dotenv
 
 ## Why This Approach?
@@ -203,7 +207,9 @@ The app tracks API usage in real-time via OpenRouter with **pre-analysis cost es
 5. **Cost Transparency**: Real-time cost tracking helps manage API expenses
 6. **File Support**: Direct file upload reduces friction and enables auto-detection
 7. **Session History**: Review and compare past analyses without re-running
-8. **Accessible**: No installation required when deployed to Streamlit Cloud
-9. **Extensible**: Easy to add new models or languages
+8. **Privacy-First**: Session-only storage ensures data is device-specific and not shared across devices
+9. **Mobile-Friendly**: Responsive design works seamlessly on desktop, tablet, and mobile devices
+10. **Accessible**: No installation required when deployed to Streamlit Cloud
+11. **Extensible**: Easy to add new models or languages
 
 
