@@ -563,15 +563,29 @@ hr {
     }
     
     [data-testid="stSidebar"] {
-        min-width: 260px !important;
+        min-width: 0 !important;
         max-width: 280px !important;
-        width: 260px !important;
+        width: 0 !important;
+        overflow: hidden !important;
     }
     
     [data-testid="stSidebar"][aria-expanded="true"] {
         position: fixed !important;
         z-index: 999 !important;
         box-shadow: var(--shadow-lg) !important;
+        width: 280px !important;
+        min-width: 280px !important;
+        max-width: 85vw !important;
+        visibility: visible !important;
+    }
+    
+    [data-testid="stSidebar"][aria-expanded="false"] {
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
+        transform: translateX(-100%) !important;
+        visibility: hidden !important;
+        overflow: hidden !important;
     }
     
     [data-testid="stSidebar"] [data-testid="baseButton-header"],
@@ -904,18 +918,20 @@ hr {
    SIDEBAR RESIZE HANDLING
    ============================================ */
 
-/* Fix sidebar width to prevent layout disturbance */
-[data-testid="stSidebar"] {
-    min-width: 340px !important;
-    max-width: 340px !important;
-    width: 340px !important;
-    flex-shrink: 0 !important;
-}
+/* Fix sidebar width to prevent layout disturbance - desktop only */
+@media (min-width: 769px) {
+    [data-testid="stSidebar"] {
+        min-width: 340px !important;
+        max-width: 340px !important;
+        width: 340px !important;
+        flex-shrink: 0 !important;
+    }
 
-[data-testid="stSidebar"][aria-expanded="false"] {
-    min-width: 0 !important;
-    max-width: 0 !important;
-    width: 0 !important;
+    [data-testid="stSidebar"][aria-expanded="false"] {
+        min-width: 0 !important;
+        max-width: 0 !important;
+        width: 0 !important;
+    }
 }
 
 /* Disable sidebar resizer to prevent layout issues */
@@ -1125,12 +1141,21 @@ body, .stApp, .main {
         box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5) !important;
         transform: translateX(0) !important;
         transition: transform 0.3s ease !important;
+        visibility: visible !important;
+        width: 280px !important;
+        min-width: 280px !important;
+        max-width: 85vw !important;
     }
     
-    /* Sidebar when collapsed - hidden off screen */
+    /* Sidebar when collapsed - completely hidden */
     [data-testid="stSidebar"][aria-expanded="false"] {
         transform: translateX(-100%) !important;
         transition: transform 0.3s ease !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
+        visibility: hidden !important;
+        overflow: hidden !important;
     }
     
     /* Overlay backdrop when sidebar is open - use a separate element */
@@ -1150,10 +1175,6 @@ body, .stApp, .main {
         display: block;
     }
     
-    [data-testid="stSidebar"][aria-expanded="true"] {
-        width: 280px !important;
-        max-width: 85vw !important;
-    }
     
     /* Ensure main content takes full width */
     .main {
