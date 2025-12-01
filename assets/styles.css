@@ -807,6 +807,36 @@ hr {
 }
 
 /* ============================================
+   SIDEBAR RESIZE HANDLING
+   ============================================ */
+
+/* Fix sidebar width to prevent layout disturbance */
+[data-testid="stSidebar"] {
+    min-width: 280px !important;
+    max-width: 400px !important;
+    width: 320px !important;
+    transition: none !important;
+}
+
+[data-testid="stSidebar"][aria-expanded="false"] {
+    min-width: 0 !important;
+    width: 0 !important;
+}
+
+/* Main content should fill remaining space */
+.main .block-container {
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 0 auto;
+}
+
+/* Prevent main content from being affected by sidebar resize */
+section[data-testid="stSidebarContent"] {
+    width: 100% !important;
+    overflow-x: hidden;
+}
+
+/* ============================================
    ADDITIONAL RESPONSIVE FIXES
    ============================================ */
 
