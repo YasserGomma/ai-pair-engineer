@@ -668,8 +668,8 @@ def _render_api_key_input() -> str:
             if st.button(toggle_label, key="toggle_api_key_visibility", help="Toggle visibility", use_container_width=True):
                 st.session_state.api_key_visible = not st.session_state.api_key_visible
                 # Preserve the current key value when toggling
-        if api_key:
-            st.session_state["api_key"] = api_key
+                if api_key:
+                    st.session_state["api_key"] = api_key
                 st.rerun()
         
         # Validation and status
