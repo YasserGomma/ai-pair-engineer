@@ -43,22 +43,74 @@ def load_mobile_scripts() -> None:
     """Load mobile-specific scripts for better UX."""
     st.markdown("""
     <script>
-    // Ensure sidebar is collapsed on mobile by default
+    // Mobile Sidebar Drawer Functionality
     (function() {
-        function handleMobileSidebar() {
+        function setupMobileSidebar() {
             const isMobile = window.innerWidth <= 768;
             const sidebar = document.querySelector('[data-testid="stSidebar"]');
+            const toggleButton = document.querySelector('button[data-testid="baseButton-header"]');
             
             if (isMobile && sidebar) {
-                const isExpanded = sidebar.getAttribute('aria-expanded') === 'true';
-                // If sidebar is expanded on mobile, we can add overlay logic here
-                // The CSS will handle the visual collapse
+                // Create overlay element if it doesn't exist
+                let overlay = document.querySelector('.sidebar-overlay');
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.className = 'sidebar-overlay';
+                    document.body.appendChild(overlay);
+                }
+                
+                // Ensure sidebar toggle button is visible and clickable
+                if (toggleButton) {
+                    toggleButton.style.display = 'flex';
+                    toggleButton.style.zIndex = '1000';
+                    toggleButton.style.position = 'fixed';
+                    toggleButton.style.top = '1rem';
+                    toggleButton.style.left = '1rem';
+                }
+                
+                // Function to update overlay visibility
+                function updateOverlay() {
+                    const isExpanded = sidebar.getAttribute('aria-expanded') === 'true';
+                    if (isExpanded) {
+                        overlay.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        overlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    }
+                }
+                
+                // Close sidebar when clicking overlay
+                overlay.addEventListener('click', () => {
+                    if (toggleButton && sidebar.getAttribute('aria-expanded') === 'true') {
+                        toggleButton.click();
+                    }
+                });
+                
+                // Prevent body scroll when sidebar is open
+                const observer = new MutationObserver(() => {
+                    updateOverlay();
+                });
+                
+                observer.observe(sidebar, {
+                    attributes: true,
+                    attributeFilter: ['aria-expanded']
+                });
+                
+                // Initial update
+                updateOverlay();
             }
         }
         
-        // Run on load and resize
-        handleMobileSidebar();
-        window.addEventListener('resize', handleMobileSidebar);
+        // Run on load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupMobileSidebar);
+        } else {
+            setupMobileSidebar();
+        }
+        
+        // Run on resize
+        window.addEventListener('resize', setupMobileSidebar);
         
         // Prevent zoom on input focus (iOS)
         const inputs = document.querySelectorAll('input[type="text"], input[type="password"], textarea, select');
@@ -511,19 +563,19 @@ def render_header() -> None:
 
 
 def _render_api_key_input() -> str:
-    # Enhanced API Key Input Styling
+    # Clean, Modern API Key Input Styling
     st.markdown("""
     <style>
-    /* API Key Input Container */
-    .api-key-container {
-        margin-bottom: 1rem;
+    /* Clean API Key Section */
+    .api-key-section {
+        margin-bottom: 1.5rem;
     }
     
-    .api-key-header {
+    .api-key-label-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.75rem;
     }
     
     .api-key-label {
@@ -535,35 +587,101 @@ def _render_api_key_input() -> str:
         font-size: 0.95rem;
     }
     
-    .api-key-help {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 20px;
-        height: 20px;
+    .api-key-help-btn {
+        width: 22px;
+        height: 22px;
         border-radius: 50%;
-        background: rgba(88, 166, 255, 0.1);
+        background: rgba(88, 166, 255, 0.15);
         border: 1px solid rgba(88, 166, 255, 0.3);
         color: var(--accent-primary);
-        font-size: 0.75rem;
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         cursor: help;
         transition: all 0.2s;
     }
     
-    .api-key-help:hover {
-        background: rgba(88, 166, 255, 0.2);
+    .api-key-help-btn:hover {
+        background: rgba(88, 166, 255, 0.25);
         border-color: var(--accent-primary);
+        transform: scale(1.1);
     }
     
+    /* Input Row */
+    .api-key-input-row {
+        display: flex;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+    
+    /* Input Field Styling */
+    div[data-testid="stTextInput"] {
+        flex: 1;
+    }
+    
+    div[data-testid="stTextInput"] input[type="password"],
+    div[data-testid="stTextInput"] input[type="text"],
+    div[data-testid="stTextInput"] input:not([type]) {
+        font-family: var(--font-mono) !important;
+        letter-spacing: 0.05em !important;
+        height: 42px !important;
+        padding: 0.75rem 1rem !important;
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border-primary) !important;
+        border-radius: var(--radius-md) !important;
+        color: var(--text-primary) !important;
+        font-size: 0.9rem !important;
+    }
+    
+    div[data-testid="stTextInput"] input:focus {
+        border-color: var(--accent-primary) !important;
+        box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1) !important;
+        outline: none !important;
+    }
+    
+    /* Hide Streamlit's default password toggle */
+    div[data-testid="stTextInput"] button:not([key]) {
+        display: none !important;
+    }
+    
+    /* Toggle Button */
+    button[key="toggle_api_key_visibility"] {
+        background: var(--bg-card) !important;
+        border: 1px solid var(--border-primary) !important;
+        color: var(--text-secondary) !important;
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        min-height: 42px !important;
+        padding: 0 !important;
+        border-radius: var(--radius-md) !important;
+        transition: all 0.2s !important;
+        font-size: 1.1rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+    
+    button[key="toggle_api_key_visibility"]:hover {
+        background: var(--bg-elevated) !important;
+        border-color: var(--accent-primary) !important;
+        color: var(--accent-primary) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 2px 8px rgba(88, 166, 255, 0.15) !important;
+    }
+    
+    /* Status Badge */
     .api-key-status {
         display: inline-flex;
         align-items: center;
-        gap: 0.375rem;
-        padding: 0.25rem 0.75rem;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
         border-radius: var(--radius-md);
         font-size: 0.8rem;
         font-weight: 500;
-        margin-top: 0.5rem;
+        margin-top: 0.75rem;
     }
     
     .api-key-status.valid {
@@ -578,15 +696,17 @@ def _render_api_key_input() -> str:
         color: var(--accent-error);
     }
     
+    /* Help Link */
     .api-key-link {
         color: var(--accent-primary);
         text-decoration: none;
         font-size: 0.85rem;
         display: inline-flex;
         align-items: center;
-        gap: 0.25rem;
-        margin-top: 0.5rem;
+        gap: 0.375rem;
+        margin-top: 0.75rem;
         transition: all 0.2s;
+        padding: 0.25rem 0;
     }
     
     .api-key-link:hover {
@@ -594,90 +714,15 @@ def _render_api_key_input() -> str:
         text-decoration: underline;
     }
     
-    /* Enhanced input field styling */
-    div[data-testid="stTextInput"]:has(input[type="password"]),
-    div[data-testid="stTextInput"]:has(input[type="text"]) {
-        position: relative;
-    }
-    
+    /* Hint Text */
     .api-key-hint {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-top: 0.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-    
-    /* Toggle button styling */
-    button[key="toggle_api_key_visibility"] {
-        background: var(--bg-card) !important;
-        border: 1px solid var(--border-primary) !important;
-        color: var(--text-secondary) !important;
-        padding: 0.5rem !important;
-        height: 38px !important;
-        min-height: 38px !important;
-        max-height: 38px !important;
-        transition: all 0.2s !important;
-        font-size: 1.2rem !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        line-height: 1 !important;
-    }
-    
-    button[key="toggle_api_key_visibility"]:hover {
-        background: var(--bg-elevated) !important;
-        border-color: var(--accent-primary) !important;
-        color: var(--accent-primary) !important;
-        transform: scale(1.05) !important;
-    }
-    
-    /* Input field enhancement */
-    div[data-testid="stTextInput"] input[type="password"],
-    div[data-testid="stTextInput"] input[type="text"] {
-        font-family: var(--font-mono) !important;
-        letter-spacing: 0.05em !important;
-        height: 38px !important;
-    }
-    
-    /* Hide Streamlit's default password field eye icon - comprehensive selectors */
-    div[data-testid="stTextInput"] button[title*="password" i],
-    div[data-testid="stTextInput"] button[title*="Password" i],
-    div[data-testid="stTextInput"] button[aria-label*="password" i],
-    div[data-testid="stTextInput"] button[aria-label*="Password" i],
-    div[data-testid="stTextInput"] button[type="button"]:not([key]),
-    div[data-testid="stTextInput"] > div > div > button:not([key]),
-    div[data-testid="stTextInput"] svg[data-testid*="eye"],
-    div[data-testid="stTextInput"] svg[data-testid*="Eye"] {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        width: 0 !important;
-        height: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-    
-    /* Show only our custom toggle button */
-    button[key="toggle_api_key_visibility"] {
-        display: flex !important;
-    }
-    
-    /* Ensure columns align properly */
-    div[data-testid="column"]:has(button[key="toggle_api_key_visibility"]) {
-        display: flex;
-        align-items: flex-start;
-    }
-    
-    /* API key hint text styling */
-    .api-key-enter-hint {
         font-size: 0.75rem;
         color: var(--text-muted);
         margin-top: 0.5rem;
         display: flex;
         align-items: center;
-        gap: 0.25rem;
+        gap: 0.375rem;
+        font-style: italic;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -698,14 +743,16 @@ def _render_api_key_input() -> str:
         api_key = os.getenv("OPENROUTER_API_KEY")
         api_key_source = "environment"
     
-    # Render header with help icon
+    # Clean Header
     st.markdown("""
-    <div class="api-key-header">
-        <div class="api-key-label">
-            <i class="fas fa-key" style="color: var(--accent-primary);"></i>
-            <span>OpenRouter API Key</span>
+    <div class="api-key-section">
+        <div class="api-key-label-row">
+            <div class="api-key-label">
+                <i class="fas fa-key" style="color: var(--accent-primary);"></i>
+                <span>OpenRouter API Key</span>
+            </div>
+            <div class="api-key-help-btn" title="Get your API key from openrouter.ai/keys">?</div>
         </div>
-        <div class="api-key-help" title="Get your API key from openrouter.ai/keys">?</div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -719,50 +766,47 @@ def _render_api_key_input() -> str:
         </div>
         """, unsafe_allow_html=True)
     else:
-        # Manual input with enhanced styling
+        # Manual input with clean design
         current_key = st.session_state.get("api_key", "")
         
         # Toggle visibility state
         if "api_key_visible" not in st.session_state:
             st.session_state.api_key_visible = False
         
-        # Create layout for input and toggle button with better alignment
-        input_container = st.container()
-        with input_container:
-            input_col, toggle_col = st.columns([5, 1], gap="small")
-            
-            with input_col:
-                # Input field
-                api_key = st.text_input(
-                    "OpenRouter API Key",
-                    type="password" if not st.session_state.api_key_visible else "text",
-                    value=current_key,
-                    placeholder="sk-or-v1-...",
-                    help="",
-                    label_visibility="collapsed",
-                    key="api_key_input"
-                )
-                # Add hint below input field
-                st.markdown("""
-                <div class="api-key-enter-hint">
-                    <i class="fas fa-keyboard" style="font-size: 0.7rem;"></i>
-                    <span>Press Enter to apply</span>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            with toggle_col:
-                # Toggle button aligned with input
-                toggle_text = "🙈" if st.session_state.api_key_visible else "👁️"
-                if st.button(toggle_text, key="toggle_api_key_visibility", help="Toggle visibility", use_container_width=True):
-                    st.session_state.api_key_visible = not st.session_state.api_key_visible
-                    # Preserve the current key value when toggling
-                    if api_key:
-                        st.session_state["api_key"] = api_key
-                    st.rerun()
-                # Add spacing to align with hint text
-                st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
+        # Input row with toggle button
+        input_col, toggle_col = st.columns([6, 1], gap="small")
         
-        # Validation and status
+        with input_col:
+            # Input field - clean, no placeholder text inside
+            api_key = st.text_input(
+                "OpenRouter API Key",
+                type="password" if not st.session_state.api_key_visible else "default",
+                value=current_key,
+                placeholder="Enter your API key",
+                help="",
+                label_visibility="collapsed",
+                key="api_key_input"
+            )
+        
+        with toggle_col:
+            # Clean toggle button
+            toggle_text = "🙈" if st.session_state.api_key_visible else "👁️"
+            if st.button(toggle_text, key="toggle_api_key_visibility", help="Toggle visibility"):
+                st.session_state.api_key_visible = not st.session_state.api_key_visible
+                if api_key:
+                    st.session_state["api_key"] = api_key
+                st.rerun()
+        
+        # Hint text below input (only show if no key entered)
+        if not api_key:
+            st.markdown("""
+            <div class="api-key-hint">
+                <i class="fas fa-keyboard" style="font-size: 0.7rem;"></i>
+                <span>Press Enter to apply</span>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Validation status
         if api_key:
             is_valid, error_msg = validate_api_key(api_key)
             if is_valid:
@@ -780,17 +824,13 @@ def _render_api_key_input() -> str:
                 </div>
                 """, unsafe_allow_html=True)
         
-        # Help link and hint
-        st.markdown(f"""
+        # Help link
+        st.markdown("""
         <div>
             <a href="https://openrouter.ai/keys" target="_blank" class="api-key-link">
                 <i class="fas fa-external-link-alt"></i>
                 Get your API key from OpenRouter
             </a>
-        </div>
-        <div class="api-key-hint">
-            <i class="fas fa-info-circle" style="color: var(--text-muted);"></i>
-            Your API key is stored in session and never sent to our servers
         </div>
         """, unsafe_allow_html=True)
         
